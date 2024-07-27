@@ -1,0 +1,24 @@
+{
+  "name": "weight-tracker-service",
+  "description": "A service to manage weight tracking for me",
+  "main": "index.mjs",
+  "type": "module",
+  "scripts": {
+    "start": "node index.mjs",
+    "test": "uvu src test",
+    "lint": "pnpm run lint:prettier && pnpm run lint:eslint",
+    "lint:prettier": "prettier . --write",
+    "lint:eslint": "eslint 'src/**/*.mjs'"
+  },
+  "author": "Grigoriy Levanov",
+  "license": "MIT",
+  "dependencies": {
+    "mongodb": "6.8.0"
+  },
+  "devDependencies": {
+    "eslint": "8.57.0",
+    "eslint-config-prettier": "9.1.0",
+    "prettier": "3.3.3",
+    "uvu": "0.5.6"
+  }
+}
