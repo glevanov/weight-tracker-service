@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node index.mjs",
+    "dev": "nodemon index.mjs",
     "test": "uvu src test",
     "lint": "pnpm run lint:prettier && pnpm run lint:eslint",
     "lint:prettier": "prettier . --write",
@@ -18,6 +19,7 @@
   "devDependencies": {
     "eslint": "8.57.0",
     "eslint-config-prettier": "9.1.0",
+    "nodemon": "3.1.4",
     "prettier": "3.3.3",
     "uvu": "0.5.6"
   }
