@@ -101,7 +101,7 @@ export class Connection {
 
       return {
         isSuccess: true,
-        data: null,
+        data: "Weight added successfully",
       };
     } catch (err) {
       return await this.#handleError(err);

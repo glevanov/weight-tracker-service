@@ -1,6 +1,8 @@
-import { getWeights } from "./src/get-weight-points.mjs";
 import { createServer } from "node:http";
+
 import { config } from "./config.mjs";
+import { getWeights } from "./src/get-weights.mjs";
+import { addWeight } from "./src/add-weight.mjs";
 
 const server = createServer((req, res) => {
   res.setHeader("Access-Control-Allow-Origin", config.frontendUrl);
@@ -24,13 +26,15 @@ const server = createServer((req, res) => {
         }
       });
     } else if (req.url === "/weights" && req.method === "POST") {
-      const parsedBody = JSON.parse(body);
-      const weight = Number(parsedBody.weight);
-
-      console.log(weight);
-
-      res.writeHead(200, { "Content-Type": "text/plain" });
-      res.end(String(weight));
+      addWeight(body, (result) => {
+        if (result.isSuccess) {
+          res.writeHead(201, { "Content-Type": "text/plain" });
+          res.end(JSON.stringify(result.data));
+        } else {
+          res.writeHead(500, { "Content-Type": "text/plain" });
+          res.end(result.error.toString());
+        }
+      });
     } else {
       res.writeHead(404, { "Content-Type": "text/plain" });
       res.end("Not found");

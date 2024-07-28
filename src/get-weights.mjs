@@ -12,11 +12,3 @@ export const getWeights = async (callback) => {
 
   callback(result);
 };
-
-export const addWeight = async (weight, callback) => {
-  const connection = Connection.instance;
-
-  const result = await connection.addWeight(weight);
-
-  callback(result);
-};
