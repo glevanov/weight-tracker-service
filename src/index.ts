@@ -7,7 +7,10 @@ import { addWeight } from "./add-weight.js";
 const server = createServer((req, res) => {
   res.setHeader("Access-Control-Allow-Origin", config.frontendUrl);
 
-  if (req.url === "/weights" && req.method === "GET") {
+  if (req.url === "/health-check" && req.method === "GET") {
+    res.writeHead(200, { "Content-Type": "text/plain" });
+    res.end("OK");
+  } else if (req.url === "/weights" && req.method === "GET") {
     getWeights((result) => {
       if (result.isSuccess) {
         res.writeHead(200, { "Content-Type": "application/json" });
