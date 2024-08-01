@@ -1,8 +1,8 @@
 import { createServer } from "node:http";
 
-import { config } from "./config.mjs";
-import { getWeights } from "./src/get-weights.mjs";
-import { addWeight } from "./src/add-weight.mjs";
+import { config } from "./config.js";
+import { getWeights } from "./get-weights.js";
+import { addWeight } from "./add-weight.js";
 
 const server = createServer((req, res) => {
   res.setHeader("Access-Control-Allow-Origin", config.frontendUrl);

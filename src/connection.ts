@@ -1,28 +1,15 @@
 import { MongoClient } from "mongodb";
 
-import { config } from "../config.mjs";
+import { config } from "./config.js";
+import type { ErrorResult, Weight, Result } from "./types.js";
 
 export class Connection {
-  /**
-   * The instance of the Connection
-   * @type {Connection}
-   * @private
-   */
-  static #instance = null;
+  static #instance: Connection | null = null;
 
-  /**
-   * The connection to the database
-   * @type {MongoClient}
-   * @private
-   */
-  #connection = null;
+  #connection: MongoClient | null = null;
 
   constructor() {}
 
-  /**
-   * Get the instance of the connection
-   * @returns {Connection}
-   */
   static get instance() {
     if (!Connection.#instance) {
       Connection.#instance = new Connection();
@@ -32,21 +19,12 @@ export class Connection {
     return Connection.#instance;
   }
 
-  /**
-   * Set the connection to the database
-   * @private
-   */
   #setConnection() {
     this.#connection = new MongoClient(config.connectionUri);
   }
 
-  /**
-   * Close the connection and return error result
-   * @param {Error} err
-   * @returns {Promise<{ isSuccess: false, error: Error }>}
-   */
-  async #handleError(err) {
-    await this.#connection.close();
+  async #handleError(err: Error): Promise<ErrorResult> {
+    await this.#connection?.close();
 
     return {
       isSuccess: false,
@@ -54,13 +32,12 @@ export class Connection {
     };
   }
 
-  /**
-   * Migrates all weights from integers to doubles, if any
-   * @returns {Promise<{ isSuccess: true, data: null } | { isSuccess: false, error: Error }>}
-   */
-  async migrateWeightsIntsToDouble() {
+  async migrateWeightsIntsToDouble(): Promise<Result<string>> {
     try {
-      await this.#connection.connect();
+      if (this.#connection === null) {
+        throw new Error("Connection is not set");
+      }
+      await this.#connection?.connect();
 
       const db = this.#connection.db(config.dbName);
       const collection = db.collection(config.collectionName);
@@ -69,24 +46,22 @@ export class Connection {
         { $set: { weight: { $toDouble: "$weight" } } },
       ]);
 
-      await this.#connection.close();
+      await this.#connection?.close();
 
       return {
         isSuccess: true,
-        data: null,
+        data: "Migration successful",
       };
     } catch (err) {
-      return await this.#handleError(err);
+      return await this.#handleError(err as Error);
     }
   }
 
-  /**
-   * Add a new weight
-   * @param {number} weight
-   * @returns {Promise<{ isSuccess: true, data: null } | { isSuccess: false, error: Error }>}
-   */
-  async addWeight(weight) {
+  async addWeight(weight: number): Promise<Result<string>> {
     try {
+      if (this.#connection === null) {
+        throw new Error("Connection is not set");
+      }
       await this.#connection.connect();
 
       const db = this.#connection.db(config.dbName);
@@ -104,16 +79,15 @@ export class Connection {
         data: "Weight added successfully",
       };
     } catch (err) {
-      return await this.#handleError(err);
+      return await this.#handleError(err as Error);
     }
   }
 
-  /**
-   * Get all weights
-   * @returns {Promise<{ isSuccess: true, data: { weight: number, timestamp: string }[] } | { isSuccess: false, error: Error }>}
-   */
-  async getWeights() {
+  async getWeights(): Promise<Result<Weight[]>> {
     try {
+      if (this.#connection === null) {
+        throw new Error("Connection is not set");
+      }
       await this.#connection.connect();
 
       const db = this.#connection.db(config.dbName);
@@ -128,7 +102,7 @@ export class Connection {
         data: weights.map(({ weight, timestamp }) => ({ weight, timestamp })),
       };
     } catch (err) {
-      return await this.#handleError(err);
+      return await this.#handleError(err as Error);
     }
   }
 }

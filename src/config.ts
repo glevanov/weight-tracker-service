@@ -2,6 +2,10 @@ import { loadEnvFile } from "node:process";
 
 loadEnvFile();
 
+if (typeof process.env.CONNECTION_URI !== "string") {
+  throw new Error("Connection URI is not provided");
+}
+
 export const config = {
   port: process.env.PORT || 3000,
   frontendUrl: process.env.FRONTEND_URL || "*",
@@ -9,7 +13,3 @@ export const config = {
   dbName: "weight-tracker",
   collectionName: "weight",
 };
-
-if (typeof config.connectionUri !== "string") {
-  throw new Error("Connection URI is not provided");
-}

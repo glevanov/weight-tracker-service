@@ -4,5 +4,5 @@ services:
     runtime: node
     plan: free
     autoDeploy: true
-    buildCommand: pnpm install --prod --frozen-lockfile
+    buildCommand: pnpm install --frozen-lockfile --ignore-scripts
     startCommand: pnpm run start
