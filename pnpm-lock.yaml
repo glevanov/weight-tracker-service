@@ -11,6 +11,9 @@ importers:
       mongodb:
         specifier: 6.8.0
         version: 6.8.0
+      node-router:
+        specifier: git://github.com/glevanov/node-router.git#81efe81bb0a84c01c803d019782391db84f721b6
+        version: https://codeload.github.com/glevanov/node-router/tar.gz/81efe81bb0a84c01c803d019782391db84f721b6
     devDependencies:
       '@types/node':
         specifier: 22.0.2
@@ -567,6 +570,10 @@ packages:
 
   natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
+
+  node-router@https://codeload.github.com/glevanov/node-router/tar.gz/81efe81bb0a84c01c803d019782391db84f721b6:
+    resolution: {tarball: https://codeload.github.com/glevanov/node-router/tar.gz/81efe81bb0a84c01c803d019782391db84f721b6}
+    version: 1.0.0
 
   npm-run-path@5.3.0:
     resolution: {integrity: sha512-ppwTtiJZq0O/ai0z7yfudtBpWIoxM8yE6nHi1X47eFR2EWORqfbu6CnPlNsjeN683eT0qG6H/Pyf9fCcvjnnnQ==}
@@ -1349,6 +1356,8 @@ snapshots:
   ms@2.1.2: {}
 
   natural-compare@1.4.0: {}
+
+  node-router@https://codeload.github.com/glevanov/node-router/tar.gz/81efe81bb0a84c01c803d019782391db84f721b6: {}
 
   npm-run-path@5.3.0:
     dependencies:

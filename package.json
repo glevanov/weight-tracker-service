@@ -25,7 +25,8 @@
     ]
   },
   "dependencies": {
-    "mongodb": "6.8.0"
+    "mongodb": "6.8.0",
+    "node-router": "git://github.com/glevanov/node-router.git#81efe81bb0a84c01c803d019782391db84f721b6"
   },
   "devDependencies": {
     "@types/node": "22.0.2",

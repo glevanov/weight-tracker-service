@@ -1,46 +1,51 @@
 import { createServer } from "node:http";
+import { Router } from "node-router";
 
 import { config } from "./config.js";
 import { getWeights } from "./get-weights.js";
 import { addWeight } from "./add-weight.js";
 
-const server = createServer((req, res) => {
-  res.setHeader("Access-Control-Allow-Origin", config.frontendUrl);
+const router = new Router();
 
-  if (req.url === "/health-check" && req.method === "GET") {
-    res.writeHead(200, { "Content-Type": "text/plain" });
-    res.end("OK");
-  } else if (req.url === "/weights" && req.method === "GET") {
-    getWeights((result) => {
+router.addRoute("GET", "/health-check", (req, res) => {
+  res.writeHead(200, { "Content-Type": "text/plain" });
+  res.end("OK");
+});
+
+router.addRoute("GET", "/weights", (req, res) => {
+  getWeights((result) => {
+    if (result.isSuccess) {
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify(result.data));
+    } else {
+      res.writeHead(500, { "Content-Type": "text/plain" });
+      res.end(result.error.toString());
+    }
+  });
+});
+
+router.addRoute("POST", "/weights", (req, res) => {
+  let body = "";
+  req.on("data", (chunk) => {
+    body += chunk.toString();
+  });
+
+  req.on("end", () => {
+    addWeight(body, (result) => {
       if (result.isSuccess) {
-        res.writeHead(200, { "Content-Type": "application/json" });
+        res.writeHead(201, { "Content-Type": "text/plain" });
         res.end(JSON.stringify(result.data));
       } else {
         res.writeHead(500, { "Content-Type": "text/plain" });
         res.end(result.error.toString());
       }
     });
-  } else if (req.url === "/weights" && req.method === "POST") {
-    let body = "";
-    req.on("data", (chunk) => {
-      body += chunk.toString();
-    });
+  });
+});
 
-    req.on("end", () => {
-      addWeight(body, (result) => {
-        if (result.isSuccess) {
-          res.writeHead(201, { "Content-Type": "text/plain" });
-          res.end(JSON.stringify(result.data));
-        } else {
-          res.writeHead(500, { "Content-Type": "text/plain" });
-          res.end(result.error.toString());
-        }
-      });
-    });
-  } else {
-    res.writeHead(404, { "Content-Type": "text/plain" });
-    res.end("Not found");
-  }
+const server = createServer((req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", config.frontendUrl);
+  router.handle(req, res);
 });
 
 server.listen(config.port, () => {
