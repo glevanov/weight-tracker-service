@@ -7,7 +7,7 @@ if (typeof process.env.CONNECTION_URI !== "string") {
 }
 
 export const config = {
-  port: process.env.PORT || 3000,
+  port: Number(process.env.PORT) || 3000,
   frontendUrl: process.env.FRONTEND_URL || "*",
   connectionUri: process.env.CONNECTION_URI,
   dbName: "weight-tracker",
