@@ -8,8 +8,19 @@ export const addWeight = async (
 ) => {
   const connection = Connection.instance;
 
-  const parsedBody = JSON.parse(body);
-  const validationResult = validateAndFormatWeight(parsedBody.weight);
+  let parsedBody: Record<string, unknown>;
+
+  try {
+    parsedBody = JSON.parse(body);
+  } catch {
+    callback({
+      isSuccess: false,
+      error: new Error("Не удалось распознать формат веса"),
+    });
+    return;
+  }
+
+  const validationResult = validateAndFormatWeight(String(parsedBody.weight));
 
   if (validationResult instanceof WeightValidationError) {
     callback({
