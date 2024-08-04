@@ -8,7 +8,8 @@
     "lint:prettier": "prettier . --check",
     "lint:eslint": "eslint src --ext .ts",
     "lint:tsc": "tsc --noEmit",
-    "postinstall": "pnpm exec simple-git-hooks"
+    "postinstall": "pnpm exec simple-git-hooks",
+    "test": "vitest run"
   },
   "author": "Grigoriy Levanov",
   "license": "MIT",
@@ -26,7 +27,7 @@
   },
   "dependencies": {
     "mongodb": "6.8.0",
-    "node-router": "git://github.com/glevanov/node-router.git#81efe81bb0a84c01c803d019782391db84f721b6"
+    "node-router": "git://github.com/glevanov/node-router.git#v1.0.0"
   },
   "devDependencies": {
     "@types/node": "22.0.2",
@@ -37,6 +38,7 @@
     "lint-staged": "15.2.7",
     "prettier": "3.3.3",
     "simple-git-hooks": "2.11.1",
-    "typescript": "5.5.4"
+    "typescript": "5.5.4",
+    "vitest": "2.0.5"
   }
 }

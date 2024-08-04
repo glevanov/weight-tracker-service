@@ -1,5 +1,6 @@
 import { Connection } from "./connection.js";
 import type { Result } from "./types.js";
+import { validateAndFormatWeight, WeightValidationError } from "./validate.js";
 
 export const addWeight = async (
   body: string,
@@ -8,18 +9,17 @@ export const addWeight = async (
   const connection = Connection.instance;
 
   const parsedBody = JSON.parse(body);
-  const weight = Number(parsedBody.weight);
+  const validationResult = validateAndFormatWeight(parsedBody.weight);
 
-  if (isNaN(weight)) {
+  if (validationResult instanceof WeightValidationError) {
     callback({
       isSuccess: false,
-      error: new Error(
-        `Incorrect weight type. Expected: number. Actual: ${weight}`,
-      ),
+      error: validationResult,
     });
+    return;
   }
 
-  const result = await connection.addWeight(weight);
+  const result = await connection.addWeight(validationResult);
 
   callback(result);
 };
