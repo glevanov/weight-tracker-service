@@ -83,7 +83,7 @@ export class Connection {
     }
   }
 
-  async getWeights(): Promise<Result<Weight[]>> {
+  async getWeights(start: Date, end: Date): Promise<Result<Weight[]>> {
     try {
       if (this.#connection === null) {
         throw new Error("Connection is not set");
@@ -93,7 +93,14 @@ export class Connection {
       const db = this.#connection.db(config.dbName);
       const collection = db.collection(config.collectionName);
 
-      const weights = await collection.find().toArray();
+      const weights = await collection
+        .find({
+          timestamp: {
+            $gte: start,
+            $lte: end,
+          },
+        })
+        .toArray();
 
       await this.#connection.close();
 

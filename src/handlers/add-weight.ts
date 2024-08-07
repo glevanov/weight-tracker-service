@@ -1,6 +1,7 @@
-import { Connection } from "./connection.js";
-import type { Result } from "./types.js";
-import { validateAndFormatWeight, WeightValidationError } from "./validate.js";
+import { Connection } from "../connection.js";
+import type { Result } from "../types.js";
+import { validateAndFormatWeight, WeightValidationError } from "../validate.js";
+import { literals } from "../literals.js";
 
 export const addWeight = async (
   body: string,
@@ -15,7 +16,7 @@ export const addWeight = async (
   } catch {
     callback({
       isSuccess: false,
-      error: new Error("Не удалось распознать формат веса"),
+      error: new Error(literals.validation.weight.failedToParse),
     });
     return;
   }

@@ -2,8 +2,8 @@ import { createServer } from "node:http";
 import { Router } from "node-router";
 
 import { config } from "./config.js";
-import { getWeights } from "./get-weights.js";
-import { addWeight } from "./add-weight.js";
+import { getWeights } from "./handlers/get-weights.js";
+import { addWeight } from "./handlers/add-weight.js";
 
 const router = new Router();
 
@@ -13,7 +13,7 @@ router.addRoute("GET", "/health-check", (req, res) => {
 });
 
 router.addRoute("GET", "/weights", (req, res) => {
-  getWeights((result) => {
+  getWeights(req.url, (result) => {
     if (result.isSuccess) {
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(JSON.stringify(result.data));
