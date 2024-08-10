@@ -12,8 +12,8 @@ importers:
         specifier: 6.8.0
         version: 6.8.0
       node-router:
-        specifier: git://github.com/glevanov/node-router.git#v1.1.0
-        version: https://codeload.github.com/glevanov/node-router/tar.gz/45285c2704987bcfdcd547f735dd409fb6e57c9e
+        specifier: git://github.com/glevanov/node-router.git#v1.1.1
+        version: https://codeload.github.com/glevanov/node-router/tar.gz/6b2522ea1d19e238666a37ce453480de7b0553bb
     devDependencies:
       '@types/node':
         specifier: 22.0.2
@@ -882,8 +882,8 @@ packages:
   natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
 
-  node-router@https://codeload.github.com/glevanov/node-router/tar.gz/45285c2704987bcfdcd547f735dd409fb6e57c9e:
-    resolution: {tarball: https://codeload.github.com/glevanov/node-router/tar.gz/45285c2704987bcfdcd547f735dd409fb6e57c9e}
+  node-router@https://codeload.github.com/glevanov/node-router/tar.gz/6b2522ea1d19e238666a37ce453480de7b0553bb:
+    resolution: {tarball: https://codeload.github.com/glevanov/node-router/tar.gz/6b2522ea1d19e238666a37ce453480de7b0553bb}
     version: 1.1.0
 
   npm-run-path@5.3.0:
@@ -2013,7 +2013,7 @@ snapshots:
 
   natural-compare@1.4.0: {}
 
-  node-router@https://codeload.github.com/glevanov/node-router/tar.gz/45285c2704987bcfdcd547f735dd409fb6e57c9e: {}
+  node-router@https://codeload.github.com/glevanov/node-router/tar.gz/6b2522ea1d19e238666a37ce453480de7b0553bb: {}
 
   npm-run-path@5.3.0:
     dependencies:
