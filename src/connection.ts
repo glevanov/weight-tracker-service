@@ -100,6 +100,7 @@ export class Connection {
             $lte: end,
           },
         })
+        .sort({ timestamp: 1 })
         .toArray();
 
       await this.#connection.close();
