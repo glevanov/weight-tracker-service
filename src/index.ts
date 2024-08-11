@@ -43,6 +43,14 @@ router.addRoute("POST", "/weights", (req, res) => {
   });
 });
 
+router.addRoute("OPTIONS", "/weights", (req, res) => {
+  res.writeHead(204, {
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
+  });
+  res.end();
+});
+
 const server = createServer((req, res) => {
   res.setHeader("Access-Control-Allow-Origin", config.frontendUrl);
   router.handle(req, res);
