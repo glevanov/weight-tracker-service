@@ -1,6 +1,9 @@
 import { Connection } from "../connection.js";
 import type { Result } from "../types.js";
-import { validateAndFormatWeight, WeightValidationError } from "../validate.js";
+import {
+  validateAndFormatWeight,
+  WeightValidationError,
+} from "../validation/validation.js";
 import { literals } from "../literals.js";
 
 export const addWeight = async (

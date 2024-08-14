@@ -5,7 +5,7 @@ import type { Result, Weight } from "../types.js";
 import {
   validateAndParseTimestamp,
   TimestampValidationError,
-} from "../validate.js";
+} from "../validation/validation.js";
 import { literals } from "../literals.js";
 
 export const getWeights = async (

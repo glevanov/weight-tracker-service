@@ -1,5 +1,8 @@
 import { expect, test } from "vitest";
-import { validateAndFormatWeight, WeightValidationError } from "./validate.js";
+import {
+  validateAndFormatWeight,
+  WeightValidationError,
+} from "./validation.js";
 
 test("validateAndFormatWeight", () => {
   expect(validateAndFormatWeight("82")).toBe(82);

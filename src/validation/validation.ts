@@ -1,4 +1,4 @@
-import { literals } from "./literals.js";
+import { literals } from "../literals.js";
 
 export class WeightValidationError extends Error {
   constructor(message: string) {
