@@ -51,6 +51,26 @@ router.addRoute("OPTIONS", "/weights", (req, res) => {
   res.end();
 });
 
+/* Registration is closed :)
+router.addRoute("POST", "/register", (req, res) => {
+  let body = "";
+  req.on("data", (chunk) => {
+    body += chunk.toString();
+  });
+
+  req.on("end", () => {
+    registerUser(body, (result) => {
+      if (result.isSuccess) {
+        res.writeHead(201, { "Content-Type": "text/plain" });
+        res.end(JSON.stringify(result.data));
+      } else {
+        res.writeHead(500, { "Content-Type": "text/plain" });
+        res.end(result.error.toString());
+      }
+    });
+  });
+});*/
+
 const server = createServer((req, res) => {
   res.setHeader("Access-Control-Allow-Origin", config.frontendUrl);
   router.handle(req, res);

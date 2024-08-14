@@ -11,5 +11,6 @@ export const config = {
   frontendUrl: process.env.FRONTEND_URL || "*",
   connectionUri: process.env.CONNECTION_URI,
   dbName: "weight-tracker",
-  collectionName: "weight",
+  weightsCollection: "weight",
+  usersCollection: "users",
 };
