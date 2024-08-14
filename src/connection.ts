@@ -1,9 +1,9 @@
 import { MongoClient } from "mongodb";
-import { scrypt, randomBytes } from "node:crypto";
 
 import { config } from "./config.js";
 import type { ErrorResult, Weight, Result } from "./types.js";
 import { literals } from "./literals.js";
+import { getSalt, hashPassword } from "./auth/auth.js";
 
 export class Connection {
   static #instance: Connection | null = null;
@@ -93,15 +93,6 @@ export class Connection {
     }
   }
 
-  #hashPassword(password: string, salt: string) {
-    return new Promise((resolve, reject) => {
-      scrypt(password, salt, 64, (err, derivedKey) => {
-        if (err) reject(err);
-        resolve(derivedKey.toString("hex"));
-      });
-    });
-  }
-
   async registerUser(
     username: string,
     password: string,
@@ -124,8 +115,8 @@ export class Connection {
         };
       }
 
-      const salt = randomBytes(16).toString("hex");
-      const hashedPassword = await this.#hashPassword(password, salt);
+      const salt = getSalt();
+      const hashedPassword = await hashPassword(password, salt);
 
       if (typeof hashedPassword !== "string") {
         throw new Error(literals.error.user.hashFailed);
