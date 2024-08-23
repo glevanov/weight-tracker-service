@@ -13,4 +13,5 @@ export const config = {
   dbName: "weight-tracker",
   weightsCollection: "weight",
   usersCollection: "users",
+  sessionCollection: "sessions",
 };

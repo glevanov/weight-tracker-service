@@ -3,7 +3,10 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 
 import { literals } from "../literals.js";
 
-export const hashPassword = (password: string, salt: string) => {
+export const hashPassword = (
+  password: string,
+  salt: string,
+): Promise<string | Error> => {
   return new Promise((resolve, reject) => {
     scrypt(password, salt, 64, (err, derivedKey) => {
       if (err) reject(err);
@@ -16,7 +19,7 @@ export const verifyPassword = (
   password: string,
   salt: string,
   hashedPassword: string,
-) => {
+): Promise<boolean | Error> => {
   return new Promise((resolve, reject) => {
     scrypt(password, salt, 64, (err, derivedKey) => {
       if (err) reject(err);
