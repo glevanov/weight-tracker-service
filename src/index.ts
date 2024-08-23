@@ -19,7 +19,7 @@ router.addRoute("GET", "/weights", (req, res) => {
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(JSON.stringify(result.data));
     } else {
-      res.writeHead(500, { "Content-Type": "text/plain" });
+      res.writeHead(400, { "Content-Type": "text/plain" });
       res.end(result.error.toString());
     }
   });
@@ -37,7 +37,7 @@ router.addRoute("POST", "/weights", (req, res) => {
         res.writeHead(201, { "Content-Type": "text/plain" });
         res.end(JSON.stringify(result.data));
       } else {
-        res.writeHead(500, { "Content-Type": "text/plain" });
+        res.writeHead(400, { "Content-Type": "text/plain" });
         res.end(result.error.toString());
       }
     });
@@ -72,7 +72,7 @@ router.addRoute("POST", "/login", (req, res) => {
         res.writeHead(200, { "Content-Type": "text/plain" });
         res.end(JSON.stringify(result.data));
       } else {
-        res.writeHead(500, { "Content-Type": "text/plain" });
+        res.writeHead(400, { "Content-Type": "text/plain" });
         res.end(result.error.toString());
       }
     });
@@ -92,7 +92,7 @@ router.addRoute("POST", "/register", (req, res) => {
         res.writeHead(201, { "Content-Type": "text/plain" });
         res.end(JSON.stringify(result.data));
       } else {
-        res.writeHead(500, { "Content-Type": "text/plain" });
+        res.writeHead(400, { "Content-Type": "text/plain" });
         res.end(result.error.toString());
       }
     });

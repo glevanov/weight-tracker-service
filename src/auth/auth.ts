@@ -15,19 +15,6 @@ export const hashPassword = (
   });
 };
 
-export const verifyPassword = (
-  password: string,
-  salt: string,
-  hashedPassword: string,
-): Promise<boolean | Error> => {
-  return new Promise((resolve, reject) => {
-    scrypt(password, salt, 64, (err, derivedKey) => {
-      if (err) reject(err);
-      resolve(derivedKey.toString("hex") === hashedPassword);
-    });
-  });
-};
-
 export const generateSalt = () => randomBytes(16).toString("hex");
 
 export const generateSessionId = () => randomBytes(16).toString("hex");

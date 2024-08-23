@@ -3,12 +3,7 @@ import { MongoClient } from "mongodb";
 import { config } from "./config.js";
 import type { ErrorResult, Weight, Result } from "./types.js";
 import { literals } from "./literals.js";
-import {
-  generateSessionId,
-  generateSalt,
-  hashPassword,
-  verifyPassword,
-} from "./auth/auth.js";
+import { generateSessionId, generateSalt, hashPassword } from "./auth/auth.js";
 
 export class Connection {
   static #instance: Connection | null = null;
@@ -167,9 +162,7 @@ export class Connection {
       if (typeof hashedPassword !== "string") {
         throw new Error(literals.error.user.unauthorized);
       }
-      const isPasswordCorrect =
-        (await verifyPassword(hashedPassword, user.salt, user.password)) ===
-        true;
+      const isPasswordCorrect = hashedPassword === user.password;
       if (!isPasswordCorrect) {
         await this.#connection.close();
         return {
@@ -187,7 +180,7 @@ export class Connection {
 
       await db
         .collection(config.sessionCollection)
-        .updateOne({ username }, sessionData, { upsert: true });
+        .replaceOne({ username }, sessionData, { upsert: true });
 
       await this.#connection.close();
 
