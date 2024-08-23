@@ -3,7 +3,12 @@ import { MongoClient } from "mongodb";
 import { config } from "./config.js";
 import type { ErrorResult, Weight, Result } from "./types.js";
 import { literals } from "./literals.js";
-import { getSalt, hashPassword, verifyPassword } from "./auth/auth.js";
+import {
+  generateSessionId,
+  generateSalt,
+  hashPassword,
+  verifyPassword,
+} from "./auth/auth.js";
 
 export class Connection {
   static #instance: Connection | null = null;
@@ -115,7 +120,7 @@ export class Connection {
         };
       }
 
-      const salt = getSalt();
+      const salt = generateSalt();
       const hashedPassword = await hashPassword(password, salt);
 
       if (typeof hashedPassword !== "string") {
@@ -159,10 +164,12 @@ export class Connection {
       }
 
       const hashedPassword = await hashPassword(password, user.salt);
+      if (typeof hashedPassword !== "string") {
+        throw new Error(literals.error.user.unauthorized);
+      }
       const isPasswordCorrect =
-        typeof hashedPassword === "string" &&
         (await verifyPassword(hashedPassword, user.salt, user.password)) ===
-          true;
+        true;
       if (!isPasswordCorrect) {
         await this.#connection.close();
         return {
@@ -171,13 +178,22 @@ export class Connection {
         };
       }
 
-      // todo sessions
+      const sessionId = generateSessionId();
+      const sessionData = {
+        sessionId,
+        expiresAt: new Date(Date.now() + config.sessionDuration),
+        username,
+      };
+
+      await db
+        .collection(config.sessionCollection)
+        .updateOne({ username }, sessionData, { upsert: true });
 
       await this.#connection.close();
 
       return {
         isSuccess: true,
-        data: "User is authorized",
+        data: sessionId,
       };
     } catch (err) {
       return await this.#handleError(err as Error);

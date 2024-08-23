@@ -28,7 +28,9 @@ export const verifyPassword = (
   });
 };
 
-export const getSalt = () => randomBytes(16).toString("hex");
+export const generateSalt = () => randomBytes(16).toString("hex");
+
+export const generateSessionId = () => randomBytes(16).toString("hex");
 
 export const handleAuthorization = (
   req: IncomingMessage,
