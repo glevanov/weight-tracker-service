@@ -36,6 +36,8 @@ export const literals = {
     user: {
       exists: "Пользователь с таким именем уже существует",
       hashFailed: "Не удалось захешировать пароль",
+      failedToAuthorize: "Авторизация не пройдена",
+      unauthorized: "Пользователь не авторизован",
     },
   },
 };
