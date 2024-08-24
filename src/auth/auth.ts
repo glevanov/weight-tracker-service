@@ -2,6 +2,7 @@ import { randomBytes, scrypt } from "node:crypto";
 import type { IncomingMessage, ServerResponse } from "node:http";
 
 import { literals } from "../literals.js";
+import { config } from "../config.js";
 
 export const hashPassword = (
   password: string,
@@ -37,6 +38,10 @@ export const handleAuthorization = (
     res.writeHead(401, { "Content-Type": "text/plain" });
     res.end(literals.error.user.failedToAuthorize);
   }
+};
+
+export const getCookieHeader = (sessionId: string) => {
+  return `session=${encodeURIComponent(sessionId)}; HttpOnly; Max-Age=${config.sessionDuration}`;
 };
 
 export const parseCookies = (req: IncomingMessage) => {

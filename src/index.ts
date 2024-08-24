@@ -1,10 +1,15 @@
-import { createServer } from "node:http";
+import {
+  createServer,
+  type IncomingMessage,
+  type ServerResponse,
+} from "node:http";
 import { Router } from "node-router";
 
 import { config } from "./config.js";
 import { getWeights } from "./handlers/get-weights.js";
 import { addWeight } from "./handlers/add-weight.js";
 import { login } from "./handlers/login.js";
+import { getCookieHeader } from "./auth/auth.js";
 
 const router = new Router();
 
@@ -69,6 +74,7 @@ router.addRoute("POST", "/login", (req, res) => {
   req.on("end", () => {
     void login(body, (result) => {
       if (result.isSuccess) {
+        res.setHeader("Set-Cookie", getCookieHeader(result.data));
         res.writeHead(200, { "Content-Type": "text/plain" });
         res.end(JSON.stringify(result.data));
       } else {
@@ -99,7 +105,7 @@ router.addRoute("POST", "/register", (req, res) => {
   });
 });*/
 
-const server = createServer((req, res) => {
+const server = createServer((req: IncomingMessage, res: ServerResponse) => {
   res.setHeader("Access-Control-Allow-Origin", config.frontendUrl);
   router.handle(req, res);
 });
