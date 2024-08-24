@@ -25,12 +25,8 @@ export const handleAuthorization = (
   res: ServerResponse,
 ) => {
   try {
-    const authHeader = req.headers.authorization;
-    if (typeof authHeader !== "string") {
-      throw new Error();
-    }
-    const token = authHeader.replace("Bearer ", "");
-    if (!token) {
+    const { session } = parseCookieHeader(req);
+    if (typeof session !== "string") {
       throw new Error();
     }
     // to be implemented
@@ -44,20 +40,21 @@ export const getCookieHeader = (sessionId: string) => {
   return `session=${encodeURIComponent(sessionId)}; HttpOnly; Max-Age=${config.sessionDuration}`;
 };
 
-export const parseCookies = (req: IncomingMessage) => {
+export const parseCookieHeader = (req: IncomingMessage) => {
   const list: Record<string, string> = {};
-  const cookieHeader = req.headers.cookie;
 
-  if (cookieHeader) {
+  const header = req.headers.cookie;
+
+  if (typeof header === "string") {
     try {
-      const cookies = cookieHeader.split(";");
+      const cookies = header.split(";");
       for (const cookie of cookies) {
         // eslint-disable-next-line prefer-const
         let [name, ...rest] = cookie.split("=");
         name = name.trim();
-        if (!name) return;
+        if (!name) continue;
         const value = rest.join("=").trim();
-        if (!value) return;
+        if (!value) continue;
         list[name] = decodeURIComponent(value);
       }
     } catch {

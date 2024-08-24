@@ -9,7 +9,7 @@ import { config } from "./config.js";
 import { getWeights } from "./handlers/get-weights.js";
 import { addWeight } from "./handlers/add-weight.js";
 import { login } from "./handlers/login.js";
-import { getCookieHeader } from "./auth/auth.js";
+import { getCookieHeader, handleAuthorization } from "./auth/auth.js";
 
 const router = new Router();
 
@@ -19,6 +19,9 @@ router.addRoute("GET", "/health-check", (req, res) => {
 });
 
 router.addRoute("GET", "/weights", (req, res) => {
+  handleAuthorization(req, res);
+  if (res.writableEnded) return;
+
   void getWeights(req.url, (result) => {
     if (result.isSuccess) {
       res.writeHead(200, { "Content-Type": "application/json" });
@@ -30,7 +33,18 @@ router.addRoute("GET", "/weights", (req, res) => {
   });
 });
 
+router.addRoute("OPTIONS", "/weights", (req, res) => {
+  res.writeHead(204, {
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
+  });
+  res.end();
+});
+
 router.addRoute("POST", "/weights", (req, res) => {
+  handleAuthorization(req, res);
+  if (res.writableEnded) return;
+
   let body = "";
   req.on("data", (chunk) => {
     body += chunk.toString();
@@ -47,14 +61,6 @@ router.addRoute("POST", "/weights", (req, res) => {
       }
     });
   });
-});
-
-router.addRoute("OPTIONS", "/weights", (req, res) => {
-  res.writeHead(204, {
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
-  });
-  res.end();
 });
 
 router.addRoute("OPTIONS", "/login", (req, res) => {
@@ -74,8 +80,10 @@ router.addRoute("POST", "/login", (req, res) => {
   req.on("end", () => {
     void login(body, (result) => {
       if (result.isSuccess) {
-        res.setHeader("Set-Cookie", getCookieHeader(result.data));
-        res.writeHead(200, { "Content-Type": "text/plain" });
+        res.writeHead(200, {
+          "Content-Type": "text/plain",
+          "Set-Cookie": getCookieHeader(result.data),
+        });
         res.end(JSON.stringify(result.data));
       } else {
         res.writeHead(400, { "Content-Type": "text/plain" });
@@ -107,6 +115,7 @@ router.addRoute("POST", "/register", (req, res) => {
 
 const server = createServer((req: IncomingMessage, res: ServerResponse) => {
   res.setHeader("Access-Control-Allow-Origin", config.frontendUrl);
+  res.setHeader("Access-Control-Allow-Credentials", "true");
   router.handle(req, res);
 });
 
