@@ -96,6 +96,15 @@ router.addRoute("POST", "/login", (req, res) => {
   });
 });
 
+router.addRoute("GET", "/session-check", (req, res) => {
+  authMiddleware(req, res).then(() => {
+    if (res.writableEnded) return;
+
+    res.writeHead(200, { "Content-Type": "text/plain" });
+    res.end("OK");
+  });
+});
+
 const server = createServer((req: IncomingMessage, res: ServerResponse) => {
   res.setHeader("Access-Control-Allow-Origin", config.frontendUrl);
   res.setHeader("Access-Control-Allow-Credentials", "true");
