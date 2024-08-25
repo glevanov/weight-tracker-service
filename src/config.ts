@@ -16,5 +16,5 @@ export const config = {
   weightsCollection: "weight",
   usersCollection: "users",
   sessionCollection: "sessions",
-  sessionDuration: HOUR * 24,
+  sessionDuration: HOUR * 24 * 7,
 };

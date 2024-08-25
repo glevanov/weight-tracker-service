@@ -9,7 +9,8 @@ import { config } from "./config.js";
 import { getWeights } from "./handlers/get-weights.js";
 import { addWeight } from "./handlers/add-weight.js";
 import { login } from "./handlers/login.js";
-import { getCookieHeader, handleAuthorization } from "./auth/auth.js";
+import { getCookieHeader } from "./auth/auth.js";
+import { authMiddleware } from "./auth/authMiddleware.js";
 
 const router = new Router();
 
@@ -19,17 +20,18 @@ router.addRoute("GET", "/health-check", (req, res) => {
 });
 
 router.addRoute("GET", "/weights", (req, res) => {
-  handleAuthorization(req, res);
-  if (res.writableEnded) return;
+  authMiddleware(req, res).then(() => {
+    if (res.writableEnded) return;
 
-  void getWeights(req.url, (result) => {
-    if (result.isSuccess) {
-      res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(JSON.stringify(result.data));
-    } else {
-      res.writeHead(400, { "Content-Type": "text/plain" });
-      res.end(result.error.toString());
-    }
+    void getWeights(req.url, (result) => {
+      if (result.isSuccess) {
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify(result.data));
+      } else {
+        res.writeHead(400, { "Content-Type": "text/plain" });
+        res.end(result.error.toString());
+      }
+    });
   });
 });
 
@@ -41,24 +43,25 @@ router.addRoute("OPTIONS", "/weights", (req, res) => {
   res.end();
 });
 
-router.addRoute("POST", "/weights", (req, res) => {
-  handleAuthorization(req, res);
-  if (res.writableEnded) return;
+router.addRoute("POST", "/weights", async (req, res) => {
+  authMiddleware(req, res).then(() => {
+    if (res.writableEnded) return;
 
-  let body = "";
-  req.on("data", (chunk) => {
-    body += chunk.toString();
-  });
+    let body = "";
+    req.on("data", (chunk) => {
+      body += chunk.toString();
+    });
 
-  req.on("end", () => {
-    void addWeight(body, (result) => {
-      if (result.isSuccess) {
-        res.writeHead(201, { "Content-Type": "text/plain" });
-        res.end(JSON.stringify(result.data));
-      } else {
-        res.writeHead(400, { "Content-Type": "text/plain" });
-        res.end(result.error.toString());
-      }
+    req.on("end", () => {
+      void addWeight(body, (result) => {
+        if (result.isSuccess) {
+          res.writeHead(201, { "Content-Type": "text/plain" });
+          res.end(JSON.stringify(result.data));
+        } else {
+          res.writeHead(400, { "Content-Type": "text/plain" });
+          res.end(result.error.toString());
+        }
+      });
     });
   });
 });
@@ -92,26 +95,6 @@ router.addRoute("POST", "/login", (req, res) => {
     });
   });
 });
-
-/* Registration is closed :)
-router.addRoute("POST", "/register", (req, res) => {
-  let body = "";
-  req.on("data", (chunk) => {
-    body += chunk.toString();
-  });
-
-  req.on("end", () => {
-    registerUser(body, (result) => {
-      if (result.isSuccess) {
-        res.writeHead(201, { "Content-Type": "text/plain" });
-        res.end(JSON.stringify(result.data));
-      } else {
-        res.writeHead(400, { "Content-Type": "text/plain" });
-        res.end(result.error.toString());
-      }
-    });
-  });
-});*/
 
 const server = createServer((req: IncomingMessage, res: ServerResponse) => {
   res.setHeader("Access-Control-Allow-Origin", config.frontendUrl);

@@ -192,4 +192,42 @@ export class Connection {
       return await this.#handleError(err as Error);
     }
   }
+
+  async hasSession(sessionId: string): Promise<Result<boolean>> {
+    try {
+      if (this.#connection === null) {
+        throw new Error(literals.error.connection.notSet);
+      }
+      await this.#connection.connect();
+
+      const db = this.#connection.db(config.dbName);
+      const collection = db.collection(config.sessionCollection);
+
+      const session = await collection.findOne({ sessionId });
+
+      if (!session) {
+        await this.#connection.close();
+        return {
+          isSuccess: true,
+          data: false,
+        };
+      }
+
+      if (session.expiresAt < new Date()) {
+        await collection.deleteOne({ sessionId });
+        await this.#connection.close();
+        return {
+          isSuccess: true,
+          data: false,
+        };
+      }
+
+      return {
+        isSuccess: true,
+        data: true,
+      };
+    } catch (err) {
+      return await this.#handleError(err as Error);
+    }
+  }
 }
