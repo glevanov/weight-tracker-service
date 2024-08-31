@@ -11,6 +11,7 @@ import { addWeight } from "./handlers/add-weight.js";
 import { login } from "./handlers/login.js";
 import { getCookieHeader } from "./auth/auth.js";
 import { authMiddleware } from "./auth/authMiddleware.js";
+import { literals } from "./literals.js";
 
 const router = new Router();
 
@@ -108,7 +109,12 @@ router.addRoute("GET", "/session-check", (req, res) => {
 const server = createServer((req: IncomingMessage, res: ServerResponse) => {
   res.setHeader("Access-Control-Allow-Origin", config.frontendUrl);
   res.setHeader("Access-Control-Allow-Credentials", "true");
-  router.handle(req, res);
+  try {
+    router.handle(req, res);
+  } catch {
+    res.writeHead(500, { "Content-Type": "text/plain" });
+    res.end(literals.error.unkown);
+  }
 });
 
 server.listen(config.port, () => {
