@@ -19,7 +19,7 @@ export const addWeight = async (
   } catch {
     callback({
       isSuccess: false,
-      error: new Error(literals.validation.weight.failedToParse),
+      error: literals.validation.weight.failedToParse,
     });
     return;
   }
@@ -29,7 +29,7 @@ export const addWeight = async (
   if (validationResult instanceof WeightValidationError) {
     callback({
       isSuccess: false,
-      error: validationResult,
+      error: validationResult.message,
     });
     return;
   }

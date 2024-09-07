@@ -39,6 +39,6 @@ export const literals = {
       failedToAuthorize: "Авторизация не пройдена",
       unauthorized: "Пользователь не авторизован",
     },
-    unkown: "Произошла неизвестная ошибка",
+    unknown: "Произошла неизвестная ошибка",
   },
 };

@@ -42,7 +42,12 @@ export const authMiddleware = async (
       throw new Error();
     }
   } catch {
-    res.writeHead(401, { "Content-Type": "text/plain" });
-    res.end(literals.error.user.failedToAuthorize);
+    res.writeHead(401, { "Content-Type": "application/json" });
+    res.end(
+      JSON.stringify({
+        isSuccess: false,
+        error: literals.error.user.failedToAuthorize,
+      }),
+    );
   }
 };

@@ -27,7 +27,7 @@ export const login = async (
   } catch {
     callback({
       isSuccess: false,
-      error: new Error(literals.validation.auth.failedToParse),
+      error: literals.validation.auth.failedToParse,
     });
     return;
   }

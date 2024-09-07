@@ -12,12 +12,18 @@ import { login } from "./handlers/login.js";
 import { getCookieHeader } from "./auth/auth.js";
 import { authMiddleware } from "./auth/authMiddleware.js";
 import { literals } from "./literals.js";
+import { SuccessResult } from "./types.js";
+
+const OK: SuccessResult<string> = {
+  isSuccess: true,
+  data: "OK",
+};
 
 const router = new Router();
 
 router.addRoute("GET", "/health-check", (req, res) => {
-  res.writeHead(200, { "Content-Type": "text/plain" });
-  res.end("OK");
+  res.writeHead(200, { "Content-Type": "application/json" });
+  res.end(JSON.stringify(OK));
 });
 
 router.addRoute("GET", "/weights", (req, res) => {
@@ -27,11 +33,10 @@ router.addRoute("GET", "/weights", (req, res) => {
     void getWeights(req.url, (result) => {
       if (result.isSuccess) {
         res.writeHead(200, { "Content-Type": "application/json" });
-        res.end(JSON.stringify(result.data));
       } else {
-        res.writeHead(400, { "Content-Type": "text/plain" });
-        res.end(result.error.toString());
+        res.writeHead(400, { "Content-Type": "application/json" });
       }
+      res.end(JSON.stringify(result));
     });
   });
 });
@@ -56,12 +61,11 @@ router.addRoute("POST", "/weights", async (req, res) => {
     req.on("end", () => {
       void addWeight(body, (result) => {
         if (result.isSuccess) {
-          res.writeHead(201, { "Content-Type": "text/plain" });
-          res.end(JSON.stringify(result.data));
+          res.writeHead(201, { "Content-Type": "application/json" });
         } else {
-          res.writeHead(400, { "Content-Type": "text/plain" });
-          res.end(result.error.toString());
+          res.writeHead(400, { "Content-Type": "application/json" });
         }
+        res.end(JSON.stringify(result));
       });
     });
   });
@@ -85,13 +89,13 @@ router.addRoute("POST", "/login", (req, res) => {
     void login(body, (result) => {
       if (result.isSuccess) {
         res.writeHead(200, {
-          "Content-Type": "text/plain",
+          "Content-Type": "application/json",
           "Set-Cookie": getCookieHeader(result.data),
         });
-        res.end(JSON.stringify(result.data));
+        res.end(JSON.stringify(OK));
       } else {
-        res.writeHead(400, { "Content-Type": "text/plain" });
-        res.end(result.error.toString());
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(JSON.stringify(result));
       }
     });
   });
@@ -101,8 +105,8 @@ router.addRoute("GET", "/session-check", (req, res) => {
   authMiddleware(req, res).then(() => {
     if (res.writableEnded) return;
 
-    res.writeHead(200, { "Content-Type": "text/plain" });
-    res.end("OK");
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify(OK));
   });
 });
 
@@ -112,8 +116,8 @@ const server = createServer((req: IncomingMessage, res: ServerResponse) => {
   try {
     router.handle(req, res);
   } catch {
-    res.writeHead(500, { "Content-Type": "text/plain" });
-    res.end(literals.error.unkown);
+    res.writeHead(500, { "Content-Type": "application/json" });
+    res.end({ isSuccess: false, error: literals.error.unknown });
   }
 });
 

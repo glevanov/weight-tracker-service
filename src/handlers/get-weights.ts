@@ -35,7 +35,7 @@ export const getWeights = async (
   if (errors.length > 0) {
     callback({
       isSuccess: false,
-      error: new Error(errors.join("; ")),
+      error: errors.join("; "),
     });
     return;
   }

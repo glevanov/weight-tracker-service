@@ -30,7 +30,7 @@ export class Connection {
 
     return {
       isSuccess: false,
-      error: err,
+      error: err.message,
     };
   }
 
@@ -111,7 +111,7 @@ export class Connection {
         await this.#connection.close();
         return {
           isSuccess: false,
-          error: new Error(literals.error.user.exists),
+          error: literals.error.user.exists,
         };
       }
 
@@ -154,7 +154,7 @@ export class Connection {
         await this.#connection.close();
         return {
           isSuccess: false,
-          error: new Error(literals.error.user.unauthorized),
+          error: literals.error.user.unauthorized,
         };
       }
 
@@ -167,7 +167,7 @@ export class Connection {
         await this.#connection.close();
         return {
           isSuccess: false,
-          error: new Error(literals.error.user.unauthorized),
+          error: literals.error.user.unauthorized,
         };
       }
 

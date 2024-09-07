@@ -5,7 +5,7 @@ export type SuccessResult<Data> = {
 
 export type ErrorResult = {
   isSuccess: false;
-  error: Error;
+  error: string;
 };
 
 export type Result<Data> = SuccessResult<Data> | ErrorResult;
