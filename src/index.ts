@@ -91,6 +91,7 @@ router.addRoute("POST", "/login", (req, res) => {
         res.writeHead(200, {
           "Content-Type": "application/json",
           "Set-Cookie": getCookieHeader(result.data),
+          SameSite: "None",
         });
         res.end(JSON.stringify(OK));
       } else {
