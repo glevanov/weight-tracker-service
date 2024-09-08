@@ -11,6 +11,7 @@ const HOUR = 1000 * 60 * 60;
 export const config = {
   port: Number(process.env.PORT) || 3000,
   frontendUrl: process.env.FRONTEND_URL || "http://localhost:5173",
+  frontendDomain: process.env.FRONTEND_DOMAIN || "localhost",
   connectionUri: process.env.CONNECTION_URI,
   dbName: "weight-tracker",
   weightsCollection: "weight",

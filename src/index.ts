@@ -92,6 +92,7 @@ router.addRoute("POST", "/login", (req, res) => {
           "Content-Type": "application/json",
           "Set-Cookie": getCookieHeader(result.data),
           SameSite: "None",
+          Domain: config.frontendDomain,
         });
         res.end(JSON.stringify(OK));
       } else {
