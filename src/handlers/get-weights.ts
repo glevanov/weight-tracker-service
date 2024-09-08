@@ -1,7 +1,7 @@
 import type { IncomingMessage } from "http";
 
 import { Connection } from "../connection.js";
-import type { Result, Weight } from "../types.js";
+import type { Result, Token, Weight } from "../types.js";
 import {
   validateAndParseTimestamp,
   TimestampValidationError,
@@ -10,6 +10,7 @@ import { literals } from "../literals.js";
 
 export const getWeights = async (
   url: IncomingMessage["url"],
+  token: Token,
   callback: (result: Result<Weight[]>) => void,
 ) => {
   const connection = Connection.instance;
@@ -40,7 +41,11 @@ export const getWeights = async (
     return;
   }
 
-  const result = await connection.getWeights(start as Date, end as Date);
+  const result = await connection.getWeights(
+    start as Date,
+    end as Date,
+    token.username,
+  );
 
   callback(result);
 };

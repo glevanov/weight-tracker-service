@@ -14,3 +14,9 @@ export type Weight = {
   weight: number;
   timestamp: string;
 };
+
+export type Token = {
+  username: string;
+  iat: number;
+  exp: number;
+};

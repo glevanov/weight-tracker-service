@@ -1,5 +1,5 @@
 import { Connection } from "../connection.js";
-import type { Result } from "../types.js";
+import type { Result, Token } from "../types.js";
 import {
   validateAndFormatWeight,
   WeightValidationError,
@@ -8,6 +8,7 @@ import { literals } from "../literals.js";
 
 export const addWeight = async (
   body: string,
+  token: Token,
   callback: (result: Result<string>) => void,
 ) => {
   const connection = Connection.instance;
@@ -34,7 +35,7 @@ export const addWeight = async (
     return;
   }
 
-  const result = await connection.addWeight(validationResult);
+  const result = await connection.addWeight(validationResult, token.username);
 
   callback(result);
 };

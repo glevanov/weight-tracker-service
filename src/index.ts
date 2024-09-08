@@ -9,7 +9,6 @@ import { config } from "./config.js";
 import { getWeights } from "./handlers/get-weights.js";
 import { addWeight } from "./handlers/add-weight.js";
 import { login } from "./handlers/login.js";
-import { getCookieHeader } from "./auth/auth.js";
 import { authMiddleware } from "./auth/authMiddleware.js";
 import { literals } from "./literals.js";
 import { SuccessResult } from "./types.js";
@@ -27,10 +26,10 @@ router.addRoute("GET", "/health-check", (req, res) => {
 });
 
 router.addRoute("GET", "/weights", (req, res) => {
-  authMiddleware(req, res).then(() => {
-    if (res.writableEnded) return;
+  authMiddleware(req, res).then((token) => {
+    if (res.writableEnded || token === undefined) return;
 
-    void getWeights(req.url, (result) => {
+    void getWeights(req.url, token, (result) => {
       if (result.isSuccess) {
         res.writeHead(200, { "Content-Type": "application/json" });
       } else {
@@ -44,14 +43,14 @@ router.addRoute("GET", "/weights", (req, res) => {
 router.addRoute("OPTIONS", "/weights", (req, res) => {
   res.writeHead(204, {
     "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
   });
   res.end();
 });
 
 router.addRoute("POST", "/weights", async (req, res) => {
-  authMiddleware(req, res).then(() => {
-    if (res.writableEnded) return;
+  authMiddleware(req, res).then((token) => {
+    if (res.writableEnded || token === undefined) return;
 
     let body = "";
     req.on("data", (chunk) => {
@@ -59,7 +58,7 @@ router.addRoute("POST", "/weights", async (req, res) => {
     });
 
     req.on("end", () => {
-      void addWeight(body, (result) => {
+      void addWeight(body, token, (result) => {
         if (result.isSuccess) {
           res.writeHead(201, { "Content-Type": "application/json" });
         } else {
@@ -74,7 +73,7 @@ router.addRoute("POST", "/weights", async (req, res) => {
 router.addRoute("OPTIONS", "/login", (req, res) => {
   res.writeHead(204, {
     "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
   });
   res.end();
 });
@@ -90,13 +89,11 @@ router.addRoute("POST", "/login", (req, res) => {
       if (result.isSuccess) {
         res.writeHead(200, {
           "Content-Type": "application/json",
-          "Set-Cookie": getCookieHeader(result.data),
         });
-        res.end(JSON.stringify(OK));
       } else {
         res.writeHead(400, { "Content-Type": "application/json" });
-        res.end(JSON.stringify(result));
       }
+      res.end(JSON.stringify(result));
     });
   });
 });
@@ -108,6 +105,14 @@ router.addRoute("GET", "/session-check", (req, res) => {
     res.writeHead(200, { "Content-Type": "application/json" });
     res.end(JSON.stringify(OK));
   });
+});
+
+router.addRoute("OPTIONS", "/session-check", (req, res) => {
+  res.writeHead(204, {
+    "Access-Control-Allow-Methods": "GET, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  });
+  res.end();
 });
 
 const server = createServer((req: IncomingMessage, res: ServerResponse) => {

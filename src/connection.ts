@@ -1,9 +1,10 @@
 import { MongoClient } from "mongodb";
+import jwt from "jsonwebtoken";
 
 import { config } from "./config.js";
 import type { ErrorResult, Weight, Result } from "./types.js";
 import { literals } from "./literals.js";
-import { generateSessionId, generateSalt, hashPassword } from "./auth/auth.js";
+import { generateSalt, hashPassword } from "./auth/auth.js";
 
 export class Connection {
   static #instance: Connection | null = null;
@@ -34,7 +35,7 @@ export class Connection {
     };
   }
 
-  async addWeight(weight: number): Promise<Result<string>> {
+  async addWeight(weight: number, username: string): Promise<Result<string>> {
     try {
       if (this.#connection === null) {
         throw new Error(literals.error.connection.notSet);
@@ -47,7 +48,7 @@ export class Connection {
       await collection.insertOne({
         weight,
         timestamp: new Date(),
-        user: "glevanov",
+        user: username,
       });
 
       await this.#connection.close();
@@ -61,7 +62,11 @@ export class Connection {
     }
   }
 
-  async getWeights(start: Date, end: Date): Promise<Result<Weight[]>> {
+  async getWeights(
+    start: Date,
+    end: Date,
+    username: string,
+  ): Promise<Result<Weight[]>> {
     try {
       if (this.#connection === null) {
         throw new Error(literals.error.connection.notSet);
@@ -73,7 +78,7 @@ export class Connection {
 
       const weights = await collection
         .find({
-          user: "glevanov",
+          user: username,
           timestamp: {
             $gte: start,
             $lte: end,
@@ -171,60 +176,21 @@ export class Connection {
         };
       }
 
-      const sessionId = generateSessionId();
-      const sessionData = {
-        sessionId,
-        expiresAt: new Date(Date.now() + config.sessionDuration),
-        username,
-      };
-
-      await db
-        .collection(config.sessionCollection)
-        .replaceOne({ username }, sessionData, { upsert: true });
+      const token = jwt.sign(
+        {
+          username,
+        },
+        config.jwtSecret,
+        {
+          expiresIn: config.sessionDuration,
+        },
+      );
 
       await this.#connection.close();
 
       return {
         isSuccess: true,
-        data: sessionId,
-      };
-    } catch (err) {
-      return await this.#handleError(err as Error);
-    }
-  }
-
-  async hasSession(sessionId: string): Promise<Result<boolean>> {
-    try {
-      if (this.#connection === null) {
-        throw new Error(literals.error.connection.notSet);
-      }
-      await this.#connection.connect();
-
-      const db = this.#connection.db(config.dbName);
-      const collection = db.collection(config.sessionCollection);
-
-      const session = await collection.findOne({ sessionId });
-
-      if (!session) {
-        await this.#connection.close();
-        return {
-          isSuccess: true,
-          data: false,
-        };
-      }
-
-      if (session.expiresAt < new Date()) {
-        await collection.deleteOne({ sessionId });
-        await this.#connection.close();
-        return {
-          isSuccess: true,
-          data: false,
-        };
-      }
-
-      return {
-        isSuccess: true,
-        data: true,
+        data: token,
       };
     } catch (err) {
       return await this.#handleError(err as Error);
