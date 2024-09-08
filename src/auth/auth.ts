@@ -18,5 +18,5 @@ export const generateSalt = () => randomBytes(16).toString("hex");
 export const generateSessionId = () => randomBytes(16).toString("hex");
 
 export const getCookieHeader = (sessionId: string) => {
-  return `session=${encodeURIComponent(sessionId)}; HttpOnly; Secure; Domain=${config.frontendDomain}; Path=/; Max-Age=${config.sessionDuration}`;
+  return `session=${encodeURIComponent(sessionId)}; HttpOnly; Secure; SameSite=None; Domain=${config.frontendDomain}; Path=/; Max-Age=${config.sessionDuration}`;
 };
