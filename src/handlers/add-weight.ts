@@ -4,11 +4,12 @@ import {
   validateAndFormatWeight,
   WeightValidationError,
 } from "../validation/validation.js";
-import { literals } from "../literals.js";
+import { Lang, locales } from "../i18n/i18n.js";
 
 export const addWeight = async (
   body: string,
   token: Token,
+  lang: Lang,
   callback: (result: Result<string>) => void,
 ) => {
   const connection = Connection.instance;
@@ -20,12 +21,15 @@ export const addWeight = async (
   } catch {
     callback({
       isSuccess: false,
-      error: literals.validation.weight.failedToParse,
+      error: locales[lang].validation.weight.failedToParse,
     });
     return;
   }
 
-  const validationResult = validateAndFormatWeight(String(parsedBody.weight));
+  const validationResult = validateAndFormatWeight(
+    String(parsedBody.weight),
+    lang,
+  );
 
   if (validationResult instanceof WeightValidationError) {
     callback({
@@ -35,7 +39,11 @@ export const addWeight = async (
     return;
   }
 
-  const result = await connection.addWeight(validationResult, token.username);
+  const result = await connection.addWeight(
+    validationResult,
+    token.username,
+    lang,
+  );
 
   callback(result);
 };

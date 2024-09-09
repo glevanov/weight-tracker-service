@@ -10,8 +10,8 @@ import { getWeights } from "./handlers/get-weights.js";
 import { addWeight } from "./handlers/add-weight.js";
 import { login } from "./handlers/login.js";
 import { authMiddleware } from "./auth/authMiddleware.js";
-import { literals } from "./literals.js";
 import { SuccessResult } from "./types.js";
+import { extractLangFromHeader, locales } from "./i18n/i18n.js";
 
 const OK: SuccessResult<string> = {
   isSuccess: true,
@@ -29,7 +29,7 @@ router.addRoute("GET", "/weights", (req, res) => {
   authMiddleware(req, res).then((token) => {
     if (res.writableEnded || token === undefined) return;
 
-    void getWeights(req.url, token, (result) => {
+    void getWeights(req.url, token, extractLangFromHeader(req), (result) => {
       if (result.isSuccess) {
         res.writeHead(200, { "Content-Type": "application/json" });
       } else {
@@ -58,7 +58,7 @@ router.addRoute("POST", "/weights", async (req, res) => {
     });
 
     req.on("end", () => {
-      void addWeight(body, token, (result) => {
+      void addWeight(body, token, extractLangFromHeader(req), (result) => {
         if (result.isSuccess) {
           res.writeHead(201, { "Content-Type": "application/json" });
         } else {
@@ -85,7 +85,7 @@ router.addRoute("POST", "/login", (req, res) => {
   });
 
   req.on("end", () => {
-    void login(body, (result) => {
+    void login(body, extractLangFromHeader(req), (result) => {
       if (result.isSuccess) {
         res.writeHead(200, {
           "Content-Type": "application/json",
@@ -122,7 +122,10 @@ const server = createServer((req: IncomingMessage, res: ServerResponse) => {
     router.handle(req, res);
   } catch {
     res.writeHead(500, { "Content-Type": "application/json" });
-    res.end({ isSuccess: false, error: literals.error.unknown });
+    res.end({
+      isSuccess: false,
+      error: locales[extractLangFromHeader(req)].error.unknown,
+    });
   }
 });
 

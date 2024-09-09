@@ -1,8 +1,8 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
 import jwt from "jsonwebtoken";
-import { literals } from "../literals.js";
 import { config } from "../config.js";
 import { Token } from "../types.js";
+import { extractLangFromHeader, locales } from "../i18n/i18n.js";
 
 const parseAuthHeader = (req: IncomingMessage) => {
   const authHeader = req.headers.authorization;
@@ -60,7 +60,7 @@ export const authMiddleware = async (
     res.end(
       JSON.stringify({
         isSuccess: false,
-        error: literals.error.user.failedToAuthorize,
+        error: locales[extractLangFromHeader(req)].error.user.failedToAuthorize,
       }),
     );
   }

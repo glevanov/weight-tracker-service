@@ -3,8 +3,8 @@ import jwt from "jsonwebtoken";
 
 import { config } from "./config.js";
 import type { ErrorResult, Weight, Result } from "./types.js";
-import { literals } from "./literals.js";
 import { generateSalt, hashPassword } from "./auth/auth.js";
+import { Lang, locales } from "./i18n/i18n.js";
 
 export class Connection {
   static #instance: Connection | null = null;
@@ -35,10 +35,14 @@ export class Connection {
     };
   }
 
-  async addWeight(weight: number, username: string): Promise<Result<string>> {
+  async addWeight(
+    weight: number,
+    username: string,
+    lang: Lang,
+  ): Promise<Result<string>> {
     try {
       if (this.#connection === null) {
-        throw new Error(literals.error.connection.notSet);
+        throw new Error(locales[lang].error.connection.notSet);
       }
       await this.#connection.connect();
 
@@ -55,7 +59,7 @@ export class Connection {
 
       return {
         isSuccess: true,
-        data: literals.response.weight.addSuccess,
+        data: locales[lang].response.weight.addSuccess,
       };
     } catch (err) {
       return await this.#handleError(err as Error);
@@ -66,10 +70,11 @@ export class Connection {
     start: Date,
     end: Date,
     username: string,
+    lang: Lang,
   ): Promise<Result<Weight[]>> {
     try {
       if (this.#connection === null) {
-        throw new Error(literals.error.connection.notSet);
+        throw new Error(locales[lang].error.connection.notSet);
       }
       await this.#connection.connect();
 
@@ -101,10 +106,11 @@ export class Connection {
   async registerUser(
     username: string,
     password: string,
+    lang: Lang,
   ): Promise<Result<string>> {
     try {
       if (this.#connection === null) {
-        throw new Error(literals.error.connection.notSet);
+        throw new Error(locales[lang].error.connection.notSet);
       }
       await this.#connection.connect();
 
@@ -116,7 +122,7 @@ export class Connection {
         await this.#connection.close();
         return {
           isSuccess: false,
-          error: literals.error.user.exists,
+          error: locales[lang].error.user.exists,
         };
       }
 
@@ -124,7 +130,7 @@ export class Connection {
       const hashedPassword = await hashPassword(password, salt);
 
       if (typeof hashedPassword !== "string") {
-        throw new Error(literals.error.user.hashFailed);
+        throw new Error(locales[lang].error.user.hashFailed);
       }
 
       await collection.insertOne({
@@ -137,17 +143,21 @@ export class Connection {
 
       return {
         isSuccess: true,
-        data: literals.response.user.registerSuccess,
+        data: locales[lang].response.user.registerSuccess,
       };
     } catch (err) {
       return await this.#handleError(err as Error);
     }
   }
 
-  async loginUser(username: string, password: string): Promise<Result<string>> {
+  async loginUser(
+    username: string,
+    password: string,
+    lang: Lang,
+  ): Promise<Result<string>> {
     try {
       if (this.#connection === null) {
-        throw new Error(literals.error.connection.notSet);
+        throw new Error(locales[lang].error.connection.notSet);
       }
       await this.#connection.connect();
 
@@ -159,20 +169,20 @@ export class Connection {
         await this.#connection.close();
         return {
           isSuccess: false,
-          error: literals.error.user.unauthorized,
+          error: locales[lang].error.user.unauthorized,
         };
       }
 
       const hashedPassword = await hashPassword(password, user.salt);
       if (typeof hashedPassword !== "string") {
-        throw new Error(literals.error.user.unauthorized);
+        throw new Error(locales[lang].error.user.unauthorized);
       }
       const isPasswordCorrect = hashedPassword === user.password;
       if (!isPasswordCorrect) {
         await this.#connection.close();
         return {
           isSuccess: false,
-          error: literals.error.user.unauthorized,
+          error: locales[lang].error.user.unauthorized,
         };
       }
 

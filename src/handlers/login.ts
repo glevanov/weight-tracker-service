@@ -1,9 +1,10 @@
 import { Connection } from "../connection.js";
 import { Result } from "../types.js";
-import { literals } from "../literals.js";
+import { Lang, locales } from "../i18n/i18n.js";
 
 export const login = async (
   body: string,
+  lang: Lang,
   callback: (result: Result<string>) => void,
 ) => {
   const connection = Connection.instance;
@@ -27,12 +28,12 @@ export const login = async (
   } catch {
     callback({
       isSuccess: false,
-      error: literals.validation.auth.failedToParse,
+      error: locales[lang].validation.auth.failedToParse,
     });
     return;
   }
 
-  const result = await connection.loginUser(username, password);
+  const result = await connection.loginUser(username, password, lang);
 
   callback(result);
 };

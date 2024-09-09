@@ -1,4 +1,4 @@
-export const literals = {
+export const ru = {
   validation: {
     weight: {
       failedToParse: "Не удалось распознать формат веса",
