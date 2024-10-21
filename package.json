@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "jsonwebtoken": "9.0.2",
-    "mongodb": "6.9.0",
+    "mongodb": "6.10.0",
     "node-router": "git://github.com/glevanov/node-router.git#v1.1.1"
   },
   "devDependencies": {
