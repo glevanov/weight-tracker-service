@@ -9,8 +9,6 @@ if (typeof process.env.JWT_SECRET !== "string") {
   throw new Error("JWT secret is not provided");
 }
 
-const HOUR = 1000 * 60 * 60;
-
 export const config = {
   port: Number(process.env.PORT) || 3000,
   frontendUrl: process.env.FRONTEND_URL || "http://localhost:5173",
@@ -19,5 +17,5 @@ export const config = {
   dbName: "weight-tracker",
   weightsCollection: "weight",
   usersCollection: "users",
-  sessionDuration: HOUR * 24 * 7,
+  sessionDuration: "12 weeks",
 };
