@@ -1,8 +1,0 @@
-services:
-  - type: web
-    name: weight-tracker-service
-    runtime: node
-    plan: free
-    autoDeploy: true
-    buildCommand: pnpm install --frozen-lockfile --ignore-scripts
-    startCommand: pnpm run start
