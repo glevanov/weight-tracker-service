@@ -1,0 +1,31 @@
+.PHONY: build run clean test test-verbose tidy download docker-build
+
+BINARY_NAME := server
+CMD_DIR := ./cmd/server
+DOCKERFILE := Dockerfile.test
+TEST_ENV := TESTCONTAINERS_RYUK_DISABLED=true
+
+
+build:
+	go build -o $(BINARY_NAME) $(CMD_DIR)
+
+run:
+	go run
+
+clean:
+	rm -f $(BINARY_NAME)
+
+test:
+	$(TEST_ENV) go test -v ./tests/...
+
+test-verbose:
+	$(TEST_ENV) go test -v -count=1 ./tests/...
+
+tidy:
+	go mod tidy
+
+download:
+	go mod download
+
+docker-build:
+	docker build -f $(DOCKERFILE) -t weight-tracker-service:test .
