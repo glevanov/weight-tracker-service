@@ -1,4 +1,4 @@
-.PHONY: build run clean test test-unit test-verbose tidy download docker-build
+.PHONY: build run clean fmt test test-unit test-verbose tidy download docker-build
 
 BINARY_NAME := server
 CMD_DIR := ./cmd/server
@@ -15,6 +15,9 @@ run:
 clean:
 	rm -f $(BINARY_NAME)
 
+fmt:
+	go fmt ./...	
+	
 test:
 	$(TEST_ENV) go test -v ./tests/...
 
