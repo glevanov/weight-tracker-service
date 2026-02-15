@@ -1,4 +1,4 @@
-.PHONY: build run clean test test-verbose tidy download docker-build
+.PHONY: build run clean test test-unit test-verbose tidy download docker-build
 
 BINARY_NAME := server
 CMD_DIR := ./cmd/server
@@ -17,6 +17,9 @@ clean:
 
 test:
 	$(TEST_ENV) go test -v ./tests/...
+
+test-unit:
+	go test -v ./internal/...
 
 test-verbose:
 	$(TEST_ENV) go test -v -count=1 ./tests/...

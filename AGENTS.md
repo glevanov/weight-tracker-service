@@ -39,8 +39,9 @@ make build              # Build the binary (./server)
 make run                # Run the server directly
 
 # Testing
-make test               # Run integration tests with testcontainers
-make test-verbose       # Run tests with verbose output and no cache
+make test              # Run integration tests with testcontainers
+make test-unit         # Run unit tests (internal packages)
+make test-verbose      # Run tests with verbose output and no cache
 TESTCONTAINERS_RYUK_DISABLED=true go test -v ./tests/...  # Direct test command
 
 # Dependencies
@@ -161,7 +162,12 @@ This formats staged files and runs type checking.
 │   └── *.ts          # Core modules
 ├── go/               # Go service (separate)
 │   ├── cmd/server/   # Entry point
-│   ├── internal/     # Private packages
+│   ├── internal/
+│   │   ├── config/   # Configuration
+│   │   ├── handlers/ # HTTP route handlers
+│   │   ├── i18n/     # Internationalization
+│   │   │   └── locales/  # Translation files (en, ru, sv)
+│   │   └── validation/ # Input validation
 │   └── tests/        # Integration tests
 └── package.json      # Node dependencies
 ```
