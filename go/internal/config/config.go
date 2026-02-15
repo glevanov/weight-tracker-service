@@ -1,15 +1,19 @@
 package config
 
 import (
+	"fmt"
 	"os"
 	"strconv"
+	"time"
 )
 
 type Config struct {
-	Port          int
-	FrontendURL   string
-	ConnectionURI string
-	DBName        string
+	Port            int
+	FrontendURL     string
+	ConnectionURI   string
+	DBName          string
+	JWTSecret       string
+	SessionDuration time.Duration
 }
 
 func Load() *Config {
@@ -35,10 +39,20 @@ func Load() *Config {
 		dbName = "weight-tracker"
 	}
 
+	jwtSecret := os.Getenv("JWT_SECRET")
+	if jwtSecret == "" {
+		panic(fmt.Errorf("JWT_SECRET environment variable is required"))
+	}
+
+	// 5 years session duration
+	sessionDuration := 5 * 365 * 24 * time.Hour
+
 	return &Config{
-		Port:          port,
-		FrontendURL:   frontendURL,
-		ConnectionURI: connectionURI,
-		DBName:        dbName,
+		Port:            port,
+		FrontendURL:     frontendURL,
+		ConnectionURI:   connectionURI,
+		DBName:          dbName,
+		JWTSecret:       jwtSecret,
+		SessionDuration: sessionDuration,
 	}
 }

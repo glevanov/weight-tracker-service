@@ -13,7 +13,10 @@ var (
 	db     *mongo.Database
 )
 
-const WeightsCollection = "weight"
+const (
+	WeightsCollection = "weight"
+	UsersCollection   = "users"
+)
 
 func Connect(uri, dbName string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -44,4 +47,8 @@ func Disconnect(ctx context.Context) error {
 
 func GetWeightsCollection() *mongo.Collection {
 	return db.Collection(WeightsCollection)
+}
+
+func GetUsersCollection() *mongo.Collection {
+	return db.Collection(UsersCollection)
 }

@@ -17,7 +17,7 @@ const (
 	TestDBName = "weight-tracker-test"
 )
 
-func SetupTestEnvironment(t *testing.T) (string, func()) {
+func SetupTestEnvironment(t *testing.T) (string, string, func()) {
 	ctx := context.Background()
 
 	// Create a Docker network for container communication
@@ -27,6 +27,15 @@ func SetupTestEnvironment(t *testing.T) (string, func()) {
 
 	mongoContainer, err := setupMongoContainer(t, nw.Name)
 	require.NoError(t, err, "Failed to start MongoDB container")
+
+	// Get MongoDB connection URI for test setup
+	mongoHost, err := mongoContainer.Host(ctx)
+	require.NoError(t, err, "Failed to get MongoDB host")
+
+	mongoPort, err := mongoContainer.MappedPort(ctx, "27017")
+	require.NoError(t, err, "Failed to get MongoDB port")
+
+	mongoURI := fmt.Sprintf("mongodb://%s:%s", mongoHost, mongoPort.Port())
 
 	baseURL, serviceCleanup := setupServiceContainer(t, nw.Name)
 
@@ -40,7 +49,7 @@ func SetupTestEnvironment(t *testing.T) (string, func()) {
 		}
 	}
 
-	return baseURL, cleanup
+	return baseURL, mongoURI, cleanup
 }
 
 func setupMongoContainer(t *testing.T, networkName string) (testcontainers.Container, error) {
@@ -87,6 +96,7 @@ func setupServiceContainer(t *testing.T, networkName string) (string, func()) {
 			"FRONTEND_URL":   "http://localhost:5173",
 			"CONNECTION_URI": "mongodb://mongo:27017",
 			"DB_NAME":        TestDBName,
+			"JWT_SECRET":     "test-jwt-secret-key",
 		},
 	}
 

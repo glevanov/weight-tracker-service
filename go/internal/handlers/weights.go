@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"weight-tracker-service/internal/auth"
 	"weight-tracker-service/internal/database"
 	"weight-tracker-service/internal/i18n"
 	"weight-tracker-service/internal/validation"
@@ -25,10 +26,12 @@ type AddWeightRequest struct {
 func GetWeights(w http.ResponseWriter, r *http.Request) {
 	lang := i18n.ExtractLang(r)
 
+	username := auth.UsernameFromContext(r.Context())
+
 	startStr := r.URL.Query().Get("start")
 	endStr := r.URL.Query().Get("end")
 
-	filter := bson.M{"user": "test"}
+	filter := bson.M{"user": username}
 
 	if startStr != "" || endStr != "" {
 		timeFilter := bson.M{}
@@ -76,6 +79,8 @@ func GetWeights(w http.ResponseWriter, r *http.Request) {
 func AddWeight(w http.ResponseWriter, r *http.Request) {
 	lang := i18n.ExtractLang(r)
 
+	username := auth.UsernameFromContext(r.Context())
+
 	var req AddWeightRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeError(w, http.StatusBadRequest, i18n.Translate(lang, validation.ErrWeightFailedToParse))
@@ -91,7 +96,7 @@ func AddWeight(w http.ResponseWriter, r *http.Request) {
 	doc := bson.M{
 		"weight":    weight,
 		"timestamp": time.Now(),
-		"user":      "test",
+		"user":      username,
 	}
 
 	collection := database.GetWeightsCollection()

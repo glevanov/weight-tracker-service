@@ -11,6 +11,7 @@ const (
 	ErrTimestampFailedToParseEnd   = "validation.timestamp.failedToParseEnd"
 	ErrAuthFailedToParse           = "validation.auth.failedToParse"
 	ErrAuthInvalidFormat           = "validation.auth.invalidFormat"
+	ErrUserUnauthorized            = "error.user.unauthorized"
 	ErrUnknown                     = "error.unknown"
 	ResponseWeightAdded            = "response.weight.addSuccess"
 )

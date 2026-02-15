@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
+	"weight-tracker-service/internal/auth"
 	"weight-tracker-service/internal/config"
 	"weight-tracker-service/internal/database"
 	"weight-tracker-service/internal/handlers"
@@ -30,9 +31,17 @@ func main() {
 		AllowCredentials: true,
 	}))
 
+	// Public routes
 	r.Get("/health-check", handlers.HealthCheck)
-	r.Get("/weights", handlers.GetWeights)
-	r.Post("/weights", handlers.AddWeight)
+	r.Post("/login", handlers.Login(cfg))
+
+	// Protected routes (require authentication)
+	r.Group(func(r chi.Router) {
+		r.Use(auth.Middleware(cfg.JWTSecret))
+		r.Get("/weights", handlers.GetWeights)
+		r.Post("/weights", handlers.AddWeight)
+		r.Get("/session-check", handlers.SessionCheck)
+	})
 
 	addr := fmt.Sprintf(":%d", cfg.Port)
 	fmt.Printf("Server is running on http://localhost%s\n", addr)
