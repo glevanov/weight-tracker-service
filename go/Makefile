@@ -10,7 +10,7 @@ build:
 	go build -o $(BINARY_NAME) $(CMD_DIR)
 
 run:
-	go run
+	go run $(CMD_DIR)
 
 clean:
 	rm -f $(BINARY_NAME)

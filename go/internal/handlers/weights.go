@@ -23,11 +23,6 @@ type AddWeightRequest struct {
 }
 
 func GetWeights(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		return
-	}
-
 	lang := i18n.ExtractLang(r)
 
 	startStr := r.URL.Query().Get("start")
@@ -41,7 +36,7 @@ func GetWeights(w http.ResponseWriter, r *http.Request) {
 		if startStr != "" {
 			startTime, err := time.Parse(time.RFC3339, startStr)
 			if err != nil {
-				writeError(w, http.StatusBadRequest, i18n.Translate(lang, "validation.timestamp.notDate"))
+				writeError(w, http.StatusBadRequest, i18n.Translate(lang, validation.ErrTimestampNotDate))
 				return
 			}
 			timeFilter["$gte"] = startTime
@@ -50,7 +45,7 @@ func GetWeights(w http.ResponseWriter, r *http.Request) {
 		if endStr != "" {
 			endTime, err := time.Parse(time.RFC3339, endStr)
 			if err != nil {
-				writeError(w, http.StatusBadRequest, i18n.Translate(lang, "validation.timestamp.notDate"))
+				writeError(w, http.StatusBadRequest, i18n.Translate(lang, validation.ErrTimestampNotDate))
 				return
 			}
 			timeFilter["$lte"] = endTime
@@ -64,14 +59,14 @@ func GetWeights(w http.ResponseWriter, r *http.Request) {
 	collection := database.GetWeightsCollection()
 	cursor, err := collection.Find(r.Context(), filter, opts)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, i18n.Translate(lang, "error.unknown"))
+		writeError(w, http.StatusInternalServerError, i18n.Translate(lang, validation.ErrUnknown))
 		return
 	}
 	defer cursor.Close(r.Context())
 
 	var weights []Weight
 	if err := cursor.All(r.Context(), &weights); err != nil {
-		writeError(w, http.StatusInternalServerError, i18n.Translate(lang, "error.unknown"))
+		writeError(w, http.StatusInternalServerError, i18n.Translate(lang, validation.ErrUnknown))
 		return
 	}
 
@@ -79,16 +74,11 @@ func GetWeights(w http.ResponseWriter, r *http.Request) {
 }
 
 func AddWeight(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		return
-	}
-
 	lang := i18n.ExtractLang(r)
 
 	var req AddWeightRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeError(w, http.StatusBadRequest, i18n.Translate(lang, "validation.weight.failedToParse"))
+		writeError(w, http.StatusBadRequest, i18n.Translate(lang, validation.ErrWeightFailedToParse))
 		return
 	}
 
@@ -107,14 +97,14 @@ func AddWeight(w http.ResponseWriter, r *http.Request) {
 	collection := database.GetWeightsCollection()
 	_, err := collection.InsertOne(r.Context(), doc)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, i18n.Translate(lang, "error.unknown"))
+		writeError(w, http.StatusInternalServerError, i18n.Translate(lang, validation.ErrUnknown))
 		return
 	}
 
-	writeSuccess(w, http.StatusCreated, i18n.Translate(lang, "response.weight.addSuccess"))
+	writeSuccess(w, http.StatusCreated, i18n.Translate(lang, validation.ResponseWeightAdded))
 }
 
-func writeSuccess(w http.ResponseWriter, status int, data interface{}) {
+func writeSuccess(w http.ResponseWriter, status int, data any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	json.NewEncoder(w).Encode(SuccessResult{

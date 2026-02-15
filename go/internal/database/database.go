@@ -9,15 +9,11 @@ import (
 )
 
 var (
-	client   *mongo.Client
-	db       *mongo.Database
-	Database *mongo.Database
+	client *mongo.Client
+	db     *mongo.Database
 )
 
-const (
-	WeightsCollection = "weight"
-	UsersCollection   = "users"
-)
+const WeightsCollection = "weight"
 
 func Connect(uri, dbName string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -35,7 +31,6 @@ func Connect(uri, dbName string) error {
 
 	client = c
 	db = c.Database(dbName)
-	Database = db
 
 	return nil
 }

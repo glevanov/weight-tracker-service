@@ -1,8 +1,8 @@
 package handlers
 
 type SuccessResult struct {
-	IsSuccess bool        `json:"isSuccess"`
-	Data      interface{} `json:"data,omitempty"`
+	IsSuccess bool `json:"isSuccess"`
+	Data      any  `json:"data,omitempty"`
 }
 
 type ErrorResult struct {

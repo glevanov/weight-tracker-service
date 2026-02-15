@@ -48,6 +48,9 @@ TESTCONTAINERS_RYUK_DISABLED=true go test -v ./tests/...  # Direct test command
 make tidy               # Run go mod tidy
 make download           # Download dependencies
 
+# Formatting
+make fmt                # Run go fmt on all packages
+
 # Cleanup
 make clean              # Remove built binary
 
@@ -117,6 +120,7 @@ import { config } from "./config.js";
 - Internal packages: `internal/` (not importable by external packages)
 - Handlers in `internal/handlers/`
 - Config in `internal/config/`
+- Database in `internal/database/`
 - Tests in `tests/` package
 
 **Naming:**
@@ -164,9 +168,10 @@ This formats staged files and runs type checking.
 │   ├── cmd/server/   # Entry point
 │   ├── internal/
 │   │   ├── config/   # Configuration
+│   │   ├── database/ # Database connection
 │   │   ├── handlers/ # HTTP route handlers
 │   │   ├── i18n/     # Internationalization
-│   │   │   └── locales/  # Translation files (en, ru, sv)
+│   │   │   └── locales/  # Locale Go files (en.go, ru.go, sv.go, locale.go)
 │   │   └── validation/ # Input validation
 │   └── tests/        # Integration tests
 └── package.json      # Node dependencies
