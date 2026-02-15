@@ -5,11 +5,6 @@ import (
 	"net/http"
 )
 
-type SuccessResult struct {
-	IsSuccess bool   `json:"isSuccess"`
-	Data      string `json:"data"`
-}
-
 func HealthCheck(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		w.WriteHeader(http.StatusMethodNotAllowed)
