@@ -11,6 +11,7 @@ import (
 	"weight-tracker-service/internal/config"
 	"weight-tracker-service/internal/database"
 	"weight-tracker-service/internal/handlers"
+	_ "weight-tracker-service/internal/logger"
 )
 
 func main() {

@@ -8,6 +8,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"weight-tracker-service/internal/i18n"
+	"weight-tracker-service/internal/logger"
 	"weight-tracker-service/internal/validation"
 )
 
@@ -29,12 +30,14 @@ func Middleware(jwtSecret string) func(http.Handler) http.Handler {
 
 			authHeader := r.Header.Get("Authorization")
 			if authHeader == "" {
+				logger.Warn("auth failed: missing authorization header", "path", r.URL.Path)
 				writeUnauthorized(w, lang)
 				return
 			}
 
 			parts := strings.Split(authHeader, " ")
 			if len(parts) != 2 || parts[0] != "Bearer" || parts[1] == "" || parts[1] == "null" {
+				logger.Warn("auth failed: invalid authorization format", "path", r.URL.Path)
 				writeUnauthorized(w, lang)
 				return
 			}
@@ -46,16 +49,19 @@ func Middleware(jwtSecret string) func(http.Handler) http.Handler {
 			})
 
 			if err != nil || !token.Valid {
+				logger.Warn("auth failed: invalid token", "path", r.URL.Path, "error", err)
 				writeUnauthorized(w, lang)
 				return
 			}
 
 			claims, ok := token.Claims.(*Token)
 			if !ok || claims.Username == "" {
+				logger.Warn("auth failed: missing username in token", "path", r.URL.Path)
 				writeUnauthorized(w, lang)
 				return
 			}
 
+			logger.Debug("auth success", "username", claims.Username, "path", r.URL.Path)
 			ctx := context.WithValue(r.Context(), usernameKey, claims.Username)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})

@@ -11,6 +11,7 @@ import (
 	"weight-tracker-service/internal/config"
 	"weight-tracker-service/internal/database"
 	"weight-tracker-service/internal/i18n"
+	"weight-tracker-service/internal/logger"
 	"weight-tracker-service/internal/validation"
 )
 
@@ -31,30 +32,37 @@ func Login(cfg *config.Config) http.HandlerFunc {
 
 		var req LoginRequest
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			logger.Warn("login failed: failed to parse request", "error", err)
 			writeError(w, http.StatusBadRequest, i18n.Translate(lang, validation.ErrAuthFailedToParse))
 			return
 		}
 
 		if req.Username == "" || req.Password == "" {
+			logger.Warn("login failed: missing username or password")
 			writeError(w, http.StatusBadRequest, i18n.Translate(lang, validation.ErrAuthInvalidFormat))
 			return
 		}
+
+		logger.Info("login attempt", "username", req.Username)
 
 		collection := database.GetUsersCollection()
 		var user UserDocument
 		err := collection.FindOne(r.Context(), bson.M{"username": req.Username}).Decode(&user)
 		if err != nil {
+			logger.Warn("login failed: user not found", "username", req.Username)
 			writeError(w, http.StatusUnauthorized, i18n.Translate(lang, validation.ErrUserUnauthorized))
 			return
 		}
 
 		hashedPassword, err := auth.HashPassword(req.Password, user.Salt)
 		if err != nil {
+			logger.Error("login failed: password hashing error", "username", req.Username, "error", err)
 			writeError(w, http.StatusInternalServerError, i18n.Translate(lang, validation.ErrUnknown))
 			return
 		}
 
 		if hashedPassword != user.Password {
+			logger.Warn("login failed: invalid password", "username", req.Username)
 			writeError(w, http.StatusUnauthorized, i18n.Translate(lang, validation.ErrUserUnauthorized))
 			return
 		}
@@ -70,10 +78,12 @@ func Login(cfg *config.Config) http.HandlerFunc {
 
 		tokenString, err := token.SignedString([]byte(cfg.JWTSecret))
 		if err != nil {
+			logger.Error("login failed: token signing error", "username", req.Username, "error", err)
 			writeError(w, http.StatusInternalServerError, i18n.Translate(lang, validation.ErrUnknown))
 			return
 		}
 
+		logger.Info("login success", "username", user.Username)
 		writeSuccess(w, http.StatusOK, tokenString)
 	}
 }
