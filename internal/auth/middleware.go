@@ -17,9 +17,7 @@ type contextKey string
 const usernameKey contextKey = "username"
 
 type Token struct {
-	Username string  `json:"username"`
-	Iat      float64 `json:"iat"`
-	Exp      float64 `json:"exp"`
+	Username string `json:"username"`
 	jwt.RegisteredClaims
 }
 

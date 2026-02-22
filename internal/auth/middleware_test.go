@@ -120,6 +120,24 @@ func TestMiddlewareWrongSecret(t *testing.T) {
 	assert.Equal(t, http.StatusUnauthorized, recorder.Code)
 }
 
+func TestMiddlewareExpiredToken(t *testing.T) {
+	secret := "test-secret-key"
+	expiredToken := createTestToken(secret, "testuser", time.Now().Add(-1*time.Hour))
+
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+
+	req := httptest.NewRequest("GET", "/protected", nil)
+	req.Header.Set("Authorization", "Bearer "+expiredToken)
+
+	recorder := httptest.NewRecorder()
+	middleware := Middleware(secret)(handler)
+	middleware.ServeHTTP(recorder, req)
+
+	assert.Equal(t, http.StatusUnauthorized, recorder.Code)
+}
+
 func TestUsernameFromContext(t *testing.T) {
 	tests := []struct {
 		name     string
