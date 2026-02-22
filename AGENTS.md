@@ -1,6 +1,7 @@
 # Agent Guidelines
 
 ## Build/Lint/Test Commands
+
 ```bash
 # Build
 make build              # Build the binary (./server)
@@ -27,6 +28,7 @@ make docker-build       # Build Docker test image
 ```
 
 ## Code Style Guidelines
+
 **Formatting:**
 
 - Standard `gofmt` formatting
@@ -40,6 +42,7 @@ make docker-build       # Build Docker test image
 - Handlers in `internal/handlers/`
 - Config in `internal/config/`
 - Database in `internal/database/`
+- Logger in `internal/logger/`
 - Tests in `tests/` package
 
 **Naming:**
@@ -67,27 +70,13 @@ make docker-build       # Build Docker test image
 ```
 ├── cmd/server/   # Entry point
 ├── internal/
-│   ├── config/   # Configuration
-│   ├── database/ # Database connection
-│   ├── handlers/ # HTTP route handlers
-│   ├── i18n/     # Internationalization
-│   │   └── locales/  # Locale Go files (en.go, ru.go, sv.go, locale.go)
+│   ├── auth/       # Authentication and middleware
+│   ├── config/     # Configuration
+│   ├── database/   # Database connection
+│   ├── handlers/   # HTTP route handlers
+│   ├── i18n/       # Internationalization
+│   │   └── locales/    # Locale Go files (en.go, ru.go, sv.go, locale.go)
+│   ├── logger/     # Structured logging (slog)
 │   └── validation/ # Input validation
-└── tests/        # Integration tests
+└── tests/          # Integration tests
 ```
-
-### Key Conventions
-
-1. Both services use the same port (3000) but are separate implementations
-2. TypeScript service is the primary implementation
-3. Go service is being built as a rewrite/alternative
-4. Both use JSON response format with `{ isSuccess, data }` or `{ isSuccess, error }`
-5. CORS configured to allow requests from `FRONTEND_URL`
-6. Environment variables: `PORT`, `FRONTEND_URL`
-
-### Dependencies
-
-- `github.com/go-chi/chi/v5` - HTTP router
-- `github.com/go-chi/cors` - CORS middleware
-- `github.com/testcontainers/testcontainers-go` - Integration testing
-- `github.com/stretchr/testify` - Test assertions
