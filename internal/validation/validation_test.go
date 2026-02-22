@@ -2,6 +2,8 @@ package validation
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestValidateAndFormatWeight(t *testing.T) {
@@ -34,16 +36,39 @@ func TestValidateAndFormatWeight(t *testing.T) {
 		t.Run(tt.input, func(t *testing.T) {
 			result, err := ValidateAndFormatWeight(tt.input)
 			if tt.wantErr {
-				if err == "" {
-					t.Errorf("expected error for input %q, got none", tt.input)
-				}
+				assert.NotEmpty(t, err, "expected error for input %q", tt.input)
 			} else {
-				if err != "" {
-					t.Errorf("unexpected error for input %q: %s", tt.input, err)
-				}
-				if result != tt.expected {
-					t.Errorf("ValidateAndFormatWeight(%q) = %v, want %v", tt.input, result, tt.expected)
-				}
+				assert.Empty(t, err, "unexpected error for input %q: %s", tt.input, err)
+				assert.Equal(t, tt.expected, result)
+			}
+		})
+	}
+}
+
+func TestValidateTimestamp(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		wantErr bool
+	}{
+		{"valid ISO 8601", "2024-01-15T10:30:00Z", false},
+		{"valid with timezone", "2024-01-15T10:30:00+01:00", false},
+		{"valid with milliseconds", "2024-01-15T10:30:00.123Z", false},
+		{"invalid format", "2024-01-15", true},
+		{"invalid format - slash date", "2024/01/15", true},
+		{"empty string", "", true},
+		{"not a date", "not-a-timestamp", true},
+		{"partial timestamp", "2024-01-15T10:30", true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result, err := ValidateTimestamp(tt.input)
+			if tt.wantErr {
+				assert.NotEmpty(t, err, "expected error for input %q", tt.input)
+			} else {
+				assert.Empty(t, err, "unexpected error for input %q: %s", tt.input, err)
+				assert.False(t, result.IsZero(), "expected non-zero time for valid input %q", tt.input)
 			}
 		})
 	}
