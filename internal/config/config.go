@@ -34,7 +34,10 @@ func Load() *Config {
 		panic(fmt.Errorf("CONNECTION_URI environment variable is required"))
 	}
 
-	dbName := "weight-tracker"
+	dbName := os.Getenv("DB_NAME")
+	if dbName == "" {
+		dbName = "weight-tracker"
+	}
 
 	jwtSecret := os.Getenv("JWT_SECRET")
 	if jwtSecret == "" {
