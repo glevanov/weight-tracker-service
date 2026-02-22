@@ -31,13 +31,10 @@ func Load() *Config {
 
 	connectionURI := os.Getenv("CONNECTION_URI")
 	if connectionURI == "" {
-		connectionURI = "mongodb://localhost:27017"
+		panic(fmt.Errorf("CONNECTION_URI environment variable is required"))
 	}
 
-	dbName := os.Getenv("DB_NAME")
-	if dbName == "" {
-		dbName = "weight-tracker"
-	}
+	dbName := "weight-tracker"
 
 	jwtSecret := os.Getenv("JWT_SECRET")
 	if jwtSecret == "" {
