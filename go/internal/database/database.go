@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	"weight-tracker-service/internal/logger"
+
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -25,22 +27,31 @@ func Connect(uri, dbName string) error {
 	clientOpts := options.Client().ApplyURI(uri)
 	c, err := mongo.Connect(ctx, clientOpts)
 	if err != nil {
+		logger.Error("database connection failed", "error", err)
 		return err
 	}
 
 	if err := c.Ping(ctx, nil); err != nil {
+		logger.Error("database ping failed", "error", err)
 		return err
 	}
 
 	client = c
 	db = c.Database(dbName)
 
+	logger.Info("database connected", "database", dbName)
 	return nil
 }
 
 func Disconnect(ctx context.Context) error {
 	if client != nil {
-		return client.Disconnect(ctx)
+		err := client.Disconnect(ctx)
+		if err != nil {
+			logger.Error("database disconnect failed", "error", err)
+			return err
+		}
+		logger.Info("database disconnected")
+		return nil
 	}
 	return nil
 }

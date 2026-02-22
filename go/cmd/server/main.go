@@ -11,14 +11,14 @@ import (
 	"weight-tracker-service/internal/config"
 	"weight-tracker-service/internal/database"
 	"weight-tracker-service/internal/handlers"
-	_ "weight-tracker-service/internal/logger"
+	"weight-tracker-service/internal/logger"
 )
 
 func main() {
 	cfg := config.Load()
 
 	if err := database.Connect(cfg.ConnectionURI, cfg.DBName); err != nil {
-		fmt.Printf("Database connection error: %v\n", err)
+		logger.Error("database connection error", "error", err)
 		return
 	}
 	defer database.Disconnect(context.Background())
@@ -45,9 +45,9 @@ func main() {
 	})
 
 	addr := fmt.Sprintf(":%d", cfg.Port)
-	fmt.Printf("Server is running on http://localhost%s\n", addr)
+	logger.Info("server starting", "port", cfg.Port)
 
 	if err := http.ListenAndServe(addr, r); err != nil {
-		fmt.Printf("Server error: %v\n", err)
+		logger.Error("server error", "error", err)
 	}
 }
