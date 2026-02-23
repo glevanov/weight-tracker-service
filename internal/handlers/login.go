@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/v2/bson"
 	"weight-tracker-service/internal/auth"
 	"weight-tracker-service/internal/config"
 	"weight-tracker-service/internal/database"

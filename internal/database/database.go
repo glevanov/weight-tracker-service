@@ -6,8 +6,8 @@ import (
 
 	"weight-tracker-service/internal/logger"
 
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 var (
@@ -25,7 +25,7 @@ func Connect(uri, dbName string) error {
 	defer cancel()
 
 	clientOpts := options.Client().ApplyURI(uri)
-	c, err := mongo.Connect(ctx, clientOpts)
+	c, err := mongo.Connect(clientOpts)
 	if err != nil {
 		logger.Error("database connection failed", "error", err)
 		return err

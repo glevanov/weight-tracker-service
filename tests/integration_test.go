@@ -11,9 +11,9 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 type AddWeightRequest struct {
@@ -44,7 +44,7 @@ type ErrorResponse struct {
 // Password: "testpassword", Salt: "0102030405060708090a0b0c0d0e0f10"
 func createTestUser(mongoURI, dbName string) error {
 	ctx := context.Background()
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(mongoURI))
+	client, err := mongo.Connect(options.Client().ApplyURI(mongoURI))
 	if err != nil {
 		return err
 	}

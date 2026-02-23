@@ -11,8 +11,8 @@ import (
 	"weight-tracker-service/internal/logger"
 	"weight-tracker-service/internal/validation"
 
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 type Weight struct {
