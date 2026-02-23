@@ -36,49 +36,37 @@ func GetLocale(lang string) locales.Locale {
 	return locales.En
 }
 
-func Translate(lang, key string) string {
-	locale := GetLocale(lang)
+var translationsCache = map[string]map[string]string{}
 
-	switch key {
-	case "validation.weight.failedToParse":
-		return locale.Validation.Weight.FailedToParse
-	case "validation.weight.invalidWeightNumberFormat":
-		return locale.Validation.Weight.InvalidWeightNumberFormat
-	case "validation.weight.weightTooLow":
-		return locale.Validation.Weight.WeightTooLow
-	case "validation.weight.weightTooHigh":
-		return locale.Validation.Weight.WeightTooHigh
-	case "validation.timestamp.notString":
-		return locale.Validation.Timestamp.NotString
-	case "validation.timestamp.notDate":
-		return locale.Validation.Timestamp.NotDate
-	case "validation.timestamp.failedToParseStart":
-		return locale.Validation.Timestamp.FailedToParseStart
-	case "validation.timestamp.failedToParseEnd":
-		return locale.Validation.Timestamp.FailedToParseEnd
-	case "validation.auth.failedToParse":
-		return locale.Validation.Auth.FailedToParse
-	case "validation.auth.invalidFormat":
-		return locale.Validation.Auth.InvalidFormat
-	case "response.weight.addSuccess":
-		return locale.Response.Weight
-	case "response.migration.success":
-		return locale.Response.Migration
-	case "response.user.registerSuccess":
-		return locale.Response.User
-	case "error.connection.notSet":
-		return locale.Error.Connection.NotSet
-	case "error.user.exists":
-		return locale.Error.User.Exists
-	case "error.user.hashFailed":
-		return locale.Error.User.HashFailed
-	case "error.user.failedToAuthorize":
-		return locale.Error.User.FailedToAuthorize
-	case "error.user.unauthorized":
-		return locale.Error.User.Unauthorized
-	case "error.unknown":
-		return locale.Error.Unknown
-	default:
-		return locale.Error.Unknown
+func init() {
+	for lang, locale := range supportedLocales {
+		translationsCache[lang] = map[string]string{
+			"validation.weight.failedToParse":             locale.Validation.Weight.FailedToParse,
+			"validation.weight.invalidWeightNumberFormat": locale.Validation.Weight.InvalidWeightNumberFormat,
+			"validation.weight.weightTooLow":              locale.Validation.Weight.WeightTooLow,
+			"validation.weight.weightTooHigh":             locale.Validation.Weight.WeightTooHigh,
+			"validation.timestamp.notString":              locale.Validation.Timestamp.NotString,
+			"validation.timestamp.notDate":                locale.Validation.Timestamp.NotDate,
+			"validation.timestamp.failedToParseStart":     locale.Validation.Timestamp.FailedToParseStart,
+			"validation.timestamp.failedToParseEnd":       locale.Validation.Timestamp.FailedToParseEnd,
+			"validation.auth.failedToParse":               locale.Validation.Auth.FailedToParse,
+			"validation.auth.invalidFormat":               locale.Validation.Auth.InvalidFormat,
+			"response.weight.addSuccess":                  locale.Response.Weight,
+			"response.migration.success":                  locale.Response.Migration,
+			"response.user.registerSuccess":               locale.Response.User,
+			"error.connection.notSet":                     locale.Error.Connection.NotSet,
+			"error.user.exists":                           locale.Error.User.Exists,
+			"error.user.hashFailed":                       locale.Error.User.HashFailed,
+			"error.user.failedToAuthorize":                locale.Error.User.FailedToAuthorize,
+			"error.user.unauthorized":                     locale.Error.User.Unauthorized,
+			"error.unknown":                               locale.Error.Unknown,
+		}
 	}
+}
+
+func Translate(lang, key string) string {
+	if t, ok := translationsCache[lang][key]; ok {
+		return t
+	}
+	return translationsCache["en"]["error.unknown"]
 }
