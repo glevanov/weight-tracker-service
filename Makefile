@@ -1,6 +1,6 @@
-.PHONY: build run clean fmt test test-unit test-verbose tidy download docker-build
+.PHONY: build run clean fmt test-unit test-integration tidy download docker-build
 
-BINARY_NAME := server
+BINARY_NAME := build/server
 CMD_DIR := ./cmd/server
 DOCKERFILE := Dockerfile.test
 TEST_ENV := TESTCONTAINERS_RYUK_DISABLED=true
@@ -18,13 +18,10 @@ clean:
 fmt:
 	go fmt ./...	
 	
-test:
-	$(TEST_ENV) go test -v ./tests/...
-
 test-unit:
 	go test -v ./internal/...
 
-test-verbose:
+test-integration:
 	$(TEST_ENV) go test -v -count=1 ./tests/...
 
 tidy:
